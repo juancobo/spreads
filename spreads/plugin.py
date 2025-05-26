@@ -411,12 +411,12 @@ def get_plugins(*names):
             # ... and put it into the cache
             extensions[name] = plugin
         except ImportError as err:
-            message = err.message
+            message = str(err)
             if message.startswith('No module named'):
                 message = message[16:]
             raise ExtensionException(
                 "Missing Python dependency for extension '{0}': {1}"
-                .format(name, message, name))
+                .format(name, message))
         except MissingDependencyException as err:
             raise ExtensionException(
                 "Error while locating external application dependency for "
@@ -450,9 +450,12 @@ def get_driver(driver_name):
     try:
         return ext.load()
     except ImportError as err:
+        message = str(err)
+        if message.startswith('No module named'):
+            message = message[16:]
         raise ExtensionException(
             "Missing dependency for driver '{0}': {1}"
-            .format(driver_name, err.message[16:]), driver_name)
+            .format(driver_name, message), driver_name)
 
 
 def get_devices(config, force_reload=False):

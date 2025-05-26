@@ -4,14 +4,14 @@ import signal
 import threading
 import time
 
-from exceptions import DataStoreGetException
-from exceptions import QueueException
-from exceptions import QueueReadException
-from exceptions import DataStorePutException
-from exceptions import QueueWriteException
-from exceptions import ScheduleAddException
-from exceptions import ScheduleReadException
-from registry import registry
+from .exceptions import DataStoreGetException
+from .exceptions import QueueException
+from .exceptions import QueueReadException
+from .exceptions import DataStorePutException
+from .exceptions import QueueWriteException
+from .exceptions import ScheduleAddException
+from .exceptions import ScheduleReadException
+from .registry import registry
 
 
 class ConsumerThread(threading.Thread):

@@ -19,6 +19,11 @@
 
 import logging
 import logging.handlers
+import sys
+
+# Python 2/3 compatibility
+if sys.version_info[0] >= 3:
+    unicode = str
 import os
 import sys
 from itertools import chain
@@ -39,19 +44,34 @@ from spreads.config import OptionTemplate
 from spreads.main import add_argument_from_template, should_show_argument
 
 #: Global application object
-app = Flask('spreadsplug.web', static_url_path='/static',
-            static_folder='./client/build', template_folder='./client')
+import os
+app_dir = os.path.dirname(os.path.abspath(__file__))
+static_folder = os.path.join(app_dir, 'client/build')
+template_folder = os.path.join(app_dir, 'client')
+
+# Check if build directory exists
+if not os.path.exists(static_folder):
+    print(f"WARNING: Static folder {static_folder} does not exist. Web interface may not work correctly.")
+    print("Try building the client application first.")
+
+app = Flask('spreadsplug.web', static_url_path='',
+            static_folder=static_folder,
+            template_folder=template_folder)
 
 #: Global task queue object
 # NOTE: This has to be imported before the other modules since they depend
 #       on it. However, it cannot be instantiated since we don't yet know
 #       where we're supposed to store the queue.
 task_queue = None
-import endpoints  # NOQA
-import util  # NOQA
-import handlers  # NOQA
-app.json_encoder = util.CustomJSONEncoder
-from discovery import DiscoveryListener  # NOQA
+from . import endpoints  # NOQA
+from . import util  # NOQA
+from . import handlers  # NOQA
+try:
+    app.json_encoder = util.CustomJSONEncoder
+except AttributeError:
+    # Flask 2.2+ uses json_provider_class instead of json_encoder
+    app.json_provider_class = util.CustomJSONEncoder
+from .discovery import DiscoveryListener  # NOQA
 
 #: Global logger
 logger = logging.getLogger('spreadsplug.web')
@@ -71,11 +91,13 @@ try:
             iface = next(dev for dev in netifaces.interfaces()
                          if 'wlan' in dev or 'eth' in dev or
                          dev.startswith('br'))
-        except StopIteration:
-            return None
-        addresses = netifaces.ifaddresses(iface)
-        if netifaces.AF_INET in addresses:
-            return addresses[netifaces.AF_INET][0]['addr']
+            addresses = netifaces.ifaddresses(iface)
+            if netifaces.AF_INET in addresses:
+                return addresses[netifaces.AF_INET][0]['addr']
+            return "127.0.0.1"
+        except Exception as e:
+            logger.error(f"Error getting IP address: {str(e)}")
+            return "127.0.0.1"
 except ImportError:
     # Solution with built-ins, not as reliable
     import socket
@@ -84,14 +106,15 @@ except ImportError:
         """ Return the first external IPv4 address using the :py:mod:`socket`
             module from the standard library.
 
-        :returns:   The IP address or ``None`` if it could not be determined
+        :returns:   The IP address or ``127.0.0.1`` if it could not be determined
         """
         try:
             return next(
                 ip for ip in socket.gethostbyname_ex(socket.gethostname())[2]
                 if not ip.startswith("127."))
-        except (StopIteration, socket.gaierror):
-            return None
+        except (StopIteration, socket.gaierror, Exception) as e:
+            logger.error(f"Error getting IP address with socket: {str(e)}")
+            return "127.0.0.1"
 
 
 class WebCommands(plugin.HookPlugin, plugin.SubcommandHooksMixin):
@@ -282,7 +305,7 @@ class WebApplication(object):
             return signal_callback
 
         # Register event handlers
-        import tasks
+        from . import tasks
         signals_ = chain(*(x.signals.values()
                            for x in (spreads.workflow, util.EventHandler,
                                      tasks, handlers)))
@@ -340,20 +363,27 @@ class WebApplication(object):
         self._listening_port = self.config['port'].get(int)
 
         self._ip_address = get_ip_address()
+        should_display_ip = False
         try:
-            device_driver = plugin.get_driver(self.global_config['driver']
-                                              .get())
-            should_display_ip = (app.config['standalone'] and
-                                 self._ip_address and
-                                 plugin.DeviceFeatures.CAN_DISPLAY_TEXT in
-                                 device_driver.features)
+            if 'driver' in self.global_config and self.global_config['driver'].get():
+                device_driver = plugin.get_driver(self.global_config['driver'].get())
+                should_display_ip = (app.config['standalone'] and
+                                    self._ip_address and
+                                    plugin.DeviceFeatures.CAN_DISPLAY_TEXT in
+                                    device_driver.features)
+            else:
+                # If no driver is specified, only proceed if we're in processor mode
+                if self.config['mode'] not in ('processor',):
+                    raise ConfigError(
+                        "You need to specify a value for `driver`.\n"
+                        "Either run `spread [gui]configure` or edit the configuration "
+                        "file.")
         except ConfigError:
-            if self.config['mode'] not in ('scanner', 'full'):
-                should_display_ip = False
-            raise ConfigError(
-                "You need to specify a value for `driver`.\n"
-                "Either run `spread [gui]configure` or edit the configuration "
-                "file.")
+            if self.config['mode'] not in ('processor',):
+                raise ConfigError(
+                    "You need to specify a value for `driver`.\n"
+                    "Either run `spread [gui]configure` or edit the configuration "
+                    "file.")
 
         if should_display_ip:
             # Every 30 seconds, see if there are devices attached and display
@@ -371,8 +401,42 @@ class WebApplication(object):
             discovery_listener = DiscoveryListener(self._listening_port)
             discovery_listener.start()
 
-        # Spin up WSGI server
-        self.application.listen(self._listening_port)
+        # Spin up WSGI server - using a simplified approach
+        # Force port 3000 as a known working port
+        import sys
+        import tornado
+        import socket
+        
+        logger.info(f"Python version: {sys.version}")
+        logger.info(f"Tornado version: {tornado.version}")
+        
+        # Check if port 3000 is available before trying to bind
+        test_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            test_socket.bind(('localhost', 3000))
+            test_socket.close()
+            port_available = True
+        except OSError:
+            port_available = False
+            logger.error("Port 3000 is not available for binding")
+        
+        if port_available:
+            self._listening_port = 3000
+            try:
+                print(f"Attempting to start web server on port {self._listening_port}")
+                logger.info(f"Web server attempting to start on port {self._listening_port}")
+                
+                # Use a direct approach to listen on the port
+                self.application.listen(self._listening_port)
+                
+                logger.info(f"Web server successfully started on port {self._listening_port}")
+                print(f"\nWeb interface available at http://localhost:{self._listening_port}/\n")
+            except Exception as e:
+                logger.critical(f"Failed to start web server: {type(e).__name__}: {str(e)}")
+                print(f"Failed to start web server: {type(e).__name__}: {str(e)}")
+        else:
+            logger.critical("Port 3000 is in use. Web interface will not be available.")
+            print("Port 3000 is in use. Web interface will not be available.")
 
         try:
             IOLoop.instance().start()

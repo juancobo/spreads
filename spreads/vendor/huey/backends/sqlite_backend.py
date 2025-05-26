@@ -13,10 +13,10 @@ except ImportError:  # Python 3
     from threading import get_ident
     buffer = memoryview
 
-from base import BaseDataStore
-from base import BaseEventEmitter
-from base import BaseQueue
-from base import BaseSchedule
+from .base import BaseDataStore
+from .base import BaseEventEmitter
+from .base import BaseQueue
+from .base import BaseSchedule
 from spreads.vendor.huey.utils import EmptyData
 
 

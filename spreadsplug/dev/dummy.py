@@ -3,10 +3,8 @@ import logging
 import os
 import time
 import urllib.request
-
-from jpegtran import JPEGImage
-from wand.drawing import Drawing
-from wand.image import Image
+import shutil
+from PIL import Image, ImageDraw, ImageFont
 
 from spreads.config import OptionTemplate
 from spreads.plugin import DeviceDriver, DeviceFeatures

@@ -25,14 +25,32 @@ import tempfile
 import threading
 import time
 import zipfile
-import Queue
+try:
+    import Queue
+except ImportError:
+    # Python 3
+    import queue as Queue
 
 import blinker
 from tornado.ioloop import IOLoop
-from tornado.web import RequestHandler, asynchronous, stream_request_body
+try:
+    from tornado.web import RequestHandler, asynchronous, stream_request_body
+except ImportError:
+    # Modern Tornado versions don't have asynchronous decorator
+    from tornado.web import RequestHandler, stream_request_body
+    from tornado.concurrent import run_on_executor
+    from concurrent.futures import ThreadPoolExecutor
+    
+    # Create a compatibility wrapper
+    def asynchronous(method):
+        """Compatibility wrapper for Tornado's deprecated asynchronous decorator."""
+        return method
 from tornado.websocket import WebSocketHandler as TornadoWebSocketHandler
 
-import util
+try:
+    import util
+except ImportError:
+    from . import util
 from spreads.workflow import Workflow
 
 signals = blinker.Namespace()

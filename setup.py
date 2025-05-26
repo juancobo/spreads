@@ -7,8 +7,7 @@ from datetime import datetime
 from subprocess import check_call, check_output
 from setuptools import setup
 from setuptools.command.sdist import sdist as SdistCommand  # flake8: noqa
-from setuptools.command.bdist_wininst import (
-    bdist_wininst as WininstCommand)  # flake8: noqa
+# bdist_wininst command removed in Python 3.12+
 
 import spreads
 
@@ -31,9 +30,9 @@ commands by implementing one of the available plugin hooks or even implement
 your own custom sub-commands.
 """
 
-VERSION = '1.0.0dev{0}.{1}'.format(
+VERSION = '1.0.0.dev{0}+{1}'.format(
     datetime.today().strftime('%Y%m%d'),
-    check_output('git rev-parse HEAD'.split())[:4].decode('utf-8'))
+    check_output('git rev-parse HEAD'.split())[:7].decode('utf-8'))
 
 
 def build_frontend_bundles():
@@ -64,16 +63,17 @@ class CustomSdistCommand(SdistCommand):
             return SdistCommand.run(self)
 
 
-class CustomWininstCommand(WininstCommand):
-    def run(self):
-        from buildmsi import build_msi
-        build_frontend_bundles()
-        build_msi(bitness=32)
-        if not os.path.exists('./dist'):
-            os.mkdir('./dist')
-        shutil.copy(
-            './build/msi32/spreads_{0}.exe'.format(spreads.__version__),
-            './dist')
+# CustomWininstCommand removed - bdist_wininst not available in Python 3.12+
+# class CustomWininstCommand(WininstCommand):
+#     def run(self):
+#         from buildmsi import build_msi
+#         build_frontend_bundles()
+#         build_msi(bitness=32)
+#         if not os.path.exists('./dist'):
+#             os.mkdir('./dist')
+#         shutil.copy(
+#             './build/msi32/spreads_{0}.exe'.format(spreads.__version__),
+#             './dist')
 
 setup(
     name="spreads",
@@ -169,7 +169,6 @@ setup(
             "Wand >= 0.6.13",
         ]
     },
-    cmdclass={'sdist': CustomSdistCommand,
-              'bdist_wininst': CustomWininstCommand},
+    cmdclass={'sdist': CustomSdistCommand},
     zip_safe=False
 )

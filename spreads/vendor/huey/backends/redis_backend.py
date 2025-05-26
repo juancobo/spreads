@@ -4,11 +4,11 @@ import time
 import redis
 from redis.exceptions import ConnectionError
 
-from backends.base import BaseDataStore
-from backends.base import BaseEventEmitter
-from backends.base import BaseQueue
-from backends.base import BaseSchedule
-from utils import EmptyData
+from .base import BaseDataStore
+from .base import BaseEventEmitter
+from .base import BaseQueue
+from .base import BaseSchedule
+from ..utils import EmptyData
 
 
 def clean_name(name):

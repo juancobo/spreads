@@ -243,15 +243,18 @@ class _classmethod(classmethod):  # noqa
         return result
 
 
-class abstractclassmethod(_classmethod):  # noqa
+class abstractclassmethod:  # noqa
     """ New decorator class that implements the @abstractclassmethod decorator
-        added in Python 3.3 for Python 2.7.
-
-    Kudos to http://stackoverflow.com/a/13640018/487903
+        for compatibility with Python 3+.
     """
     def __init__(self, func):
-        func = abc.abstractmethod(func)
-        super(abstractclassmethod, self).__init__(func)
+        func.__isabstractmethod__ = True
+        self.func = func
+
+    def __get__(self, instance, owner):
+        def wrapper(*args, **kwargs):
+            return self.func(owner, *args, **kwargs)
+        return wrapper
 
 
 class ColourStreamHandler(logging.StreamHandler):

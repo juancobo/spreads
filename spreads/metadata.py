@@ -23,7 +23,11 @@ dictionary with the following keys (which corresponds to the Dublin Core
 field of the same name): `creator`, `identifier`, `date`, `language`.
 """
 
-from collections import MutableMapping
+try:
+    from collections.abc import MutableMapping
+except ImportError:
+    # Python < 3.3
+    from collections import MutableMapping
 
 import isbnlib
 from isbnlib import _goom as googlebooks

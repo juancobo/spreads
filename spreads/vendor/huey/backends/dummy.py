@@ -5,10 +5,10 @@ real applications because they only store tasks/results in memory.
 from collections import deque
 import heapq
 
-from base import BaseDataStore
-from base import BaseEventEmitter
-from base import BaseQueue
-from base import BaseSchedule
+from .base import BaseDataStore
+from .base import BaseEventEmitter
+from .base import BaseQueue
+from .base import BaseSchedule
 from spreads.vendor.huey.utils import EmptyData
 
 

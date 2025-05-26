@@ -34,7 +34,11 @@ import pkg_resources
 import requests
 from flask import (json, jsonify, request, send_file, render_template,
                    redirect, make_response, Response)
-from werkzeug.contrib.cache import SimpleCache
+try:
+    from werkzeug.contrib.cache import SimpleCache
+except ImportError:
+    # Modern Werkzeug versions
+    from cachelib import SimpleCache
 
 import spreads.metadata
 import spreads.plugin as plugin
@@ -42,13 +46,13 @@ from spreads.util import is_os, get_version, DeviceException
 from spreads.workflow import Workflow, ValidationError
 
 from spreadsplug.web.app import app
-from discovery import discover_servers
-from util import WorkflowConverter, get_thumbnail, scale_image, convert_image
+from .discovery import discover_servers
+from .util import WorkflowConverter, get_thumbnail, scale_image, convert_image
 
 if is_os('windows'):
-    from util import find_stick_win as find_stick
+    from .util import find_stick_win as find_stick
 else:
-    from util import find_stick
+    from .util import find_stick
 
 logger = logging.getLogger('spreadsplug.web')
 
@@ -147,15 +151,53 @@ def index():
     if templates is None:
         templates = _get_templates()
         cache.set('plugin-templates', templates)
-    return render_template(
-        "index.html",
-        version=get_version(),
-        debug=app.config['debug'],
-        default_config=default_config,
-        plugins=_list_plugins(),
-        config_templates=templates,
-        metaschema=spreads.metadata.Metadata.SCHEMA,
-    )
+
+    # Get plugins list for client-side config
+    plugins = cache.get('available-plugins')
+    if plugins is None:
+        plugins = _get_plugins()
+        cache.set('available-plugins', plugins)
+
+    # Get the metadata schema
+    metaschema = cache.get('metadata-schema')
+    if metaschema is None:
+        metaschema = spreads.metadata.MetadataSchema()
+        cache.set('metadata-schema', metaschema)
+
+    # Get version
+    version = get_version()
+    
+    import os
+    # Path to the index.html file for the SPA
+    app_dir = os.path.dirname(os.path.abspath(__file__))
+    client_dir = os.path.join(os.path.dirname(app_dir), 'client')
+    build_path = os.path.join(client_dir, 'build', 'index.html')
+    
+    # Check if file exists and log info about paths
+    if os.path.exists(build_path):
+        logger.info(f"Found index.html at {build_path}")
+        try:
+            # Render template with data for client-side rendering
+            with open(build_path, 'r') as f:
+                content = f.read()
+                
+            import re
+            # Replace placeholders in the HTML with JSON data
+            content = content.replace('{{version|tojson|safe}}', json.dumps(version))
+            content = content.replace('{{default_config|tojson|safe}}', json.dumps(default_config))
+            content = content.replace('{{config_templates|tojson|safe}}', json.dumps(templates))
+            content = content.replace('{{plugins|tojson|safe}}', json.dumps(plugins))
+            content = content.replace('{{metaschema|tojson|safe}}', json.dumps(metaschema))
+            content = content.replace('{{debug|tojson|safe}}', json.dumps(app.config['debug']))
+            
+            return Response(content, mimetype='text/html')
+        except Exception as e:
+            logger.error(f"Error rendering index.html: {str(e)}")
+            return f"Error loading web interface: {str(e)}", 500
+    else:
+        logger.error(f"Index.html not found at {build_path}")
+        # Fall back to direct static file serving if template approach fails
+        return "Web interface not found. Make sure the client application is built.", 404
 
 
 @app.route('/api/log')
@@ -298,6 +340,34 @@ def _get_templates():
                                      advanced=option.advanced,
                                      depends=option.depends)
     return rv
+
+
+def _get_plugins():
+    """ Get available plugins from plugin manager.
+    
+    :returns: Dict of available plugins by type
+    :rtype: dict
+    """
+    plugins = {}
+    config = app.config['default_config']
+    if app.config['mode'] in ('scanner', 'full'):
+        drivers = plugin.get_driver_names()
+        if drivers:
+            plugins["driver"] = drivers
+
+        if app.config['mode'] == 'full':
+            for name, cls in plugin.get_pluginmanager().list_plugins(
+                    subtype="postprocessing").items():
+                if not "postprocessing" in plugins:
+                    plugins["postprocessing"] = []
+                plugins["postprocessing"].append(name)
+
+            for name, cls in plugin.get_pluginmanager().list_plugins(
+                    subtype="output").items():
+                if not "output" in plugins:
+                    plugins["output"] = []
+                plugins["output"].append(name)
+    return plugins
 
 
 def restrict_to_modes(*modes):

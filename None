@@ -1,0 +1,7 @@
+core:
+    verbose: no
+    logfile: ~/.config/spreads/spreads.log
+    loglevel: info
+    capture_keys: [' ', b]
+    convert_old: no
+plugins: []

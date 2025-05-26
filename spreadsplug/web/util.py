@@ -25,7 +25,16 @@ from datetime import datetime
 from io import BufferedIOBase, UnsupportedOperation
 
 from flask import abort
-from flask.json import JSONEncoder
+try:
+    from flask.json import JSONEncoder
+except ImportError:
+    # Flask 2.2+ moved JSONEncoder
+    from flask.json.provider import DefaultJSONProvider
+    import json
+    
+    class JSONEncoder(json.JSONEncoder):
+        """Compatibility wrapper for Flask's JSONEncoder."""
+        pass
 from pathlib import Path
 from wand.image import Image
 from werkzeug.routing import BaseConverter

@@ -25,14 +25,14 @@ from pathlib import Path
 
 import spreads.util as util
 from spreads.workflow import Workflow
-from app import task_queue
-from util import GeneratorIO, calculate_zipsize
+from .app import task_queue
+from .util import GeneratorIO, calculate_zipsize
 
 IS_WIN = util.is_os('windows')
 if IS_WIN:
-    from util import find_stick_win as find_stick
+    from .util import find_stick_win as find_stick
 else:
-    from util import find_stick
+    from .util import find_stick
 
 logger = logging.getLogger('spreadsplug.web.tasks')
 signals = blinker.Namespace()

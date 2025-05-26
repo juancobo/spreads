@@ -30,6 +30,11 @@ import colorama
 from spreads.vendor.confit import ConfigError
 from pathlib import Path
 
+# Python 2/3 compatibility
+import sys
+if sys.version_info[0] >= 3:
+    unicode = str
+
 import spreads.cli as cli
 import spreads.plugin as plugin
 import spreads.util as util
@@ -321,18 +326,18 @@ def main():
         typ, val, tb = sys.exc_info()
         logging.debug("".join(traceback.format_exception(typ, val, tb)))
         print_error("There is a problem with your device configuration:")
-        print_error(e.message)
+        print_error(str(e))
     except ConfigError as e:
         typ, val, tb = sys.exc_info()
         logging.debug("".join(traceback.format_exception(typ, val, tb)))
         print_error("There is a problem with your configuration file(s):")
-        print_error(e.message)
+        print_error(str(e))
     except util.MissingDependencyException as e:
         typ, val, tb = sys.exc_info()
         logging.debug("".join(traceback.format_exception(typ, val, tb)))
         print_error("You are missing a dependency for one of your "
                     "enabled plugins:")
-        print_error(e.message)
+        print_error(str(e))
     except KeyboardInterrupt:
         colorama.deinit()
         sys.exit(1)
@@ -345,5 +350,5 @@ def main():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(loglevel=logging.ERROR)
+    logging.basicConfig(level=logging.ERROR)
     main()

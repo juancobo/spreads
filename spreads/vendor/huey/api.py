@@ -7,20 +7,20 @@ import traceback
 import uuid
 from functools import wraps
 
-from backends.dummy import DummySchedule
-from exceptions import DataStoreGetException
-from exceptions import DataStorePutException
-from exceptions import DataStoreTimeout
-from exceptions import QueueException
-from exceptions import QueueReadException
-from exceptions import QueueRemoveException
-from exceptions import QueueWriteException
-from exceptions import ScheduleAddException
-from exceptions import ScheduleReadException
-from registry import registry
-from utils import EmptyData
-from utils import local_to_utc
-from utils import wrap_exception
+from .backends.dummy import DummySchedule
+from .exceptions import DataStoreGetException
+from .exceptions import DataStorePutException
+from .exceptions import DataStoreTimeout
+from .exceptions import QueueException
+from .exceptions import QueueReadException
+from .exceptions import QueueRemoveException
+from .exceptions import QueueWriteException
+from .exceptions import ScheduleAddException
+from .exceptions import ScheduleReadException
+from .registry import registry
+from .utils import EmptyData
+from .utils import local_to_utc
+from .utils import wrap_exception
 
 
 class Huey(object):
@@ -429,8 +429,6 @@ def create_task(task_class, func, retries_as_argument=False, task_name=None,
 
     return klass
 
-dash_re = re.compile('(\d+)-(\d+)')
-every_re = re.compile('\*\/(\d+)')
 
 def crontab(month='*', day='*', day_of_week='*', hour='*', minute='*'):
     """
@@ -444,6 +442,9 @@ def crontab(month='*', day='*', day_of_week='*', hour='*', minute='*'):
     m-n = run every time m..n
     m,n = run on m and n
     """
+    dash_re = re.compile(r'(\d+)-(\d+)')
+    every_re = re.compile(r'\*/(\d+)')
+    
     validation = (
         ('m', month, range(1, 13)),
         ('d', day, range(1, 32)),

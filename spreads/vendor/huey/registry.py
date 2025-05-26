@@ -1,6 +1,6 @@
 import pickle
 
-from exceptions import QueueException
+from .exceptions import QueueException
 
 
 class TaskRegistry(object):

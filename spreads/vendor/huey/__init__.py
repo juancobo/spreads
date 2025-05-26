@@ -1,10 +1,10 @@
-from api import Huey, crontab
+from .api import Huey, crontab
 try:
     import redis
-    from backends.redis_backend import RedisBlockingQueue
-    from backends.redis_backend import RedisDataStore
-    from backends.redis_backend import RedisEventEmitter
-    from backends.redis_backend import RedisSchedule
+    from .backends.redis_backend import RedisBlockingQueue
+    from .backends.redis_backend import RedisDataStore
+    from .backends.redis_backend import RedisEventEmitter
+    from .backends.redis_backend import RedisSchedule
 
     class RedisHuey(Huey):
         def __init__(self, name='huey', store_none=False, always_eager=False,
@@ -28,10 +28,10 @@ except ImportError:
                                'using pip: "pip install redis"')
 
 
-from backends.sqlite_backend import SqliteQueue
-from backends.sqlite_backend import SqliteDataStore
-from backends.sqlite_backend import SqliteEventEmitter
-from backends.sqlite_backend import SqliteSchedule
+from .backends.sqlite_backend import SqliteQueue
+from .backends.sqlite_backend import SqliteDataStore
+from .backends.sqlite_backend import SqliteEventEmitter
+from .backends.sqlite_backend import SqliteSchedule
 
 
 class SqliteHuey(Huey):

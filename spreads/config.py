@@ -123,7 +123,7 @@ class Configuration(object):
 
     def dump(self, filename=None, full=True, sections=None):
         """ See :py:meth:`confit.Configuration.dump` """
-        return self._config.dump(unicode(filename), full, sections)
+        return self._config.dump(str(filename), full, sections)
 
     def flatten(self):
         """ See :py:meth:`confit.Configuration.flatten` """
