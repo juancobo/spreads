@@ -205,8 +205,8 @@ class ScanTailorPlugin(HookPlugin, ProcessHooksMixin):
             for elem in ('files', 'images', 'pages',
                          'file-name-disambiguation'):
                 elem_root = root.find(elem)
-                to_keep = elem_root.getchildren()[start:end]
-                to_remove = [x for x in elem_root.getchildren()
+                to_keep = list(elem_root)[start:end]
+                to_remove = [x for x in list(elem_root)
                              if x not in to_keep]
                 for node in to_remove:
                     elem_root.remove(node)

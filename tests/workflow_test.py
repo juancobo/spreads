@@ -53,24 +53,24 @@ def test_get_devices_no_device(workflow):
 def test_get_next_capture_page(workflow):
     root_path = workflow.path/'data'/'raw'
     page = workflow._get_next_capture_page(target_page='odd')
-    assert unicode(page.raw_image) == unicode(root_path/"001.jpg")
+    assert str(page.raw_image) == str(root_path/"001.jpg")
     page = workflow._get_next_capture_page(target_page='even')
-    assert unicode(page.raw_image) == unicode(root_path/"000.jpg")
+    assert str(page.raw_image) == str(root_path/"000.jpg")
 
     workflow.pages.append(Mock(capture_num=0))
     workflow.pages.append(Mock(capture_num=1))
 
     page = workflow._get_next_capture_page(target_page='odd')
-    assert unicode(page.raw_image) == unicode(root_path/"003.jpg")
+    assert str(page.raw_image) == str(root_path/"003.jpg")
     page = workflow._get_next_capture_page(target_page='even')
-    assert unicode(page.raw_image) == unicode(root_path/"002.jpg")
+    assert str(page.raw_image) == str(root_path/"002.jpg")
 
     workflow.pages.append(Mock(capture_num=2))
     workflow.pages.append(Mock(capture_num=3))
 
     workflow.config['device']['shoot_raw'] = True
     page = workflow._get_next_capture_page(target_page='even')
-    assert unicode(page.raw_image) == unicode(root_path/"004.dng")
+    assert str(page.raw_image) == str(root_path/"004.dng")
 
 
 def test_prepare_capture(workflow):

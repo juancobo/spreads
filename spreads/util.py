@@ -188,26 +188,26 @@ def diff_dicts(old, new):
     return out
 
 
-def slugify(text, delimiter=u'-'):
+def slugify(text, delimiter='-'):
     """Generates an ASCII-only slug.
 
     Code adapted from Flask snipped by Armin Ronacher:
     http://flask.pocoo.org/snippets/5/
 
     :param text:        Text to create slug for
-    :type text:         unicode
+    :type text:         str
     :param delimiter:   Delimiter to use in slug
-    :type delimiter:    unicode
+    :type delimiter:    str
     :return:            The generated slug
-    :rtype:             unicode
+    :rtype:             str
     """
     punctuation_re = r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+'
     result = []
     for word in re.split(punctuation_re, text.lower()):
-        word = normalize('NFKD', word).encode('ascii', 'ignore')
+        word = normalize('NFKD', word).encode('ascii', 'ignore').decode('ascii')
         if word:
             result.append(word)
-    return str(delimiter.join(result))
+    return delimiter.join(result)
 
 
 class _instancemethodwrapper(object):  # noqa

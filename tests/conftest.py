@@ -11,7 +11,11 @@ import spreads.workflow as workflow
 
 import spreads.plugin as plugin
 import spreads.util as util
-import spreadsplug.web.handlers as handlers
+try:
+    import spreadsplug.web.handlers as handlers
+except ImportError:
+    # Web handlers may not be available if ImageMagick is not installed
+    handlers = None
 from spreads.config import Configuration, OptionTemplate
 
 logging.getLogger().level = logging.DEBUG
@@ -200,7 +204,9 @@ def mock_findinpath():
 @pytest.yield_fixture(autouse=True)
 def fix_blinker():
     yield
-    signals = chain(*(x.signals.values()
-                      for x in (workflow, util.EventHandler, handlers)))
+    signal_sources = [workflow, util.EventHandler]
+    if handlers is not None:
+        signal_sources.append(handlers)
+    signals = chain(*(x.signals.values() for x in signal_sources))
     for signal in signals:
         signal._clear_state()

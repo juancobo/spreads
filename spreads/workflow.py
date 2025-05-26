@@ -102,7 +102,7 @@ def _signal_on_error(signal):
                 func(*args, **kwargs)
             except Exception as e:
                 signal.send(args[0],  # self
-                            message=e.message)
+                            message=str(e))
                 raise
         return wrapped_func
     return wrap
@@ -282,7 +282,7 @@ class Workflow(object):
         """ Automatically cache every new :py:class:`Workflow` instance. """
         on_created.connect(lambda sender, **kwargs: cls._add_to_cache(sender),
                            weak=False)
-        return super(Workflow, cls).__new__(cls, *args, **kwargs)
+        return super(Workflow, cls).__new__(cls)
 
     @classmethod
     def create(cls, location, metadata=None, config=None):
@@ -591,7 +591,7 @@ class Workflow(object):
         """
         for page in pages:
             page.raw_image.unlink()
-            for fp in page.processed_images.itervalues():
+            for fp in page.processed_images.values():
                 fp.unlink()
             self._fix_page_numbers(page)
             self._fix_table_of_contents(page)
@@ -761,7 +761,7 @@ class Workflow(object):
         if not self.table_of_contents:
             return
         toc_path = self.path / 'toc.json'
-        with toc_path.open('wb') as fp:
+        with toc_path.open('w', encoding='utf-8') as fp:
             json.dump([x.to_dict() for x in self.table_of_contents], fp,
                       cls=util.CustomJSONEncoder, indent=2, ensure_ascii=False)
         self.bag.add_tagfiles(str(toc_path))
@@ -800,7 +800,7 @@ class Workflow(object):
     def _save_pages(self):
         """ Write pages to ``pagemeta.json`` in bag. """
         fpath = self.path / 'pagemeta.json'
-        with fpath.open('wb') as fp:
+        with fpath.open('w', encoding='utf-8') as fp:
             json.dump([x.to_dict() for x in self.pages], fp,
                       cls=util.CustomJSONEncoder, indent=2, ensure_ascii=False)
         self.bag.add_tagfiles(str(fpath))

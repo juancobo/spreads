@@ -19,7 +19,7 @@ import logging
 import time
 
 from concurrent.futures import ThreadPoolExecutor
-from PySide import QtCore, QtGui
+from PySide6 import QtCore, QtWidgets as QtGui
 
 import spreads.plugin as plugin
 import spreads.workflow as workflow
@@ -34,7 +34,7 @@ class LogBoxHandler(logging.Handler):
     #       a QObject instance. Multiple inheritance does not work here,
     #       as both logging.Handler and QObject have an "emit" method
     class DummyQObject(QtCore.QObject):
-        sig = QtCore.Signal(unicode)
+        sig = QtCore.Signal(str)
 
     def __init__(self, textedit):
         logging.Handler.__init__(self)
@@ -173,7 +173,7 @@ class IntroPage(QtGui.QWizardPage):
                 widget = QtGui.QComboBox()
                 i, index = 0, 0
                 for each in option.value:
-                    widget.addItem(unicode(each))
+                    widget.addItem(str(each))
                     if each == cur_value:
                         index = i
                     i += 1
@@ -267,7 +267,7 @@ class IntroPage(QtGui.QWizardPage):
                 else:
                     content = config[section][key] = widget.text()
                     logger.debug("Setting to \"{0}\"".format(content))
-                    config[section][key] = unicode(content)
+                    config[section][key] = str(content)
 
 
 class CapturePage(QtGui.QWizardPage):
@@ -331,15 +331,15 @@ class CapturePage(QtGui.QWizardPage):
         if self.wizard().workflow.is_single_camera:
             image = self.wizard().workflow.pages[-1].raw_image
             self.control_single.setPixmap(
-                QtGui.QPixmap.fromImage(QtGui.QImage(unicode(image))
+                QtGui.QPixmap.fromImage(QtGui.QImage(str(image))
                                         .scaledToWidth(250)))
         else:
             images = [p.raw_image for p in self.wizard().workflow.pages[-2:]]
             self.control_odd.setPixmap(
-                QtGui.QPixmap.fromImage(QtGui.QImage(unicode(images[0]))
+                QtGui.QPixmap.fromImage(QtGui.QImage(str(images[0]))
                                         .scaledToWidth(250)))
             self.control_even.setPixmap(
-                QtGui.QPixmap.fromImage(QtGui.QImage(unicode(images[1]))
+                QtGui.QPixmap.fromImage(QtGui.QImage(str(images[1]))
                                         .scaledToWidth(250)))
 
     def retakeCapture(self):  # noqa

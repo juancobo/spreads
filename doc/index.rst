@@ -9,6 +9,7 @@
    faq
    drivers
    plugins
+   testing
    contributing
    developers
    api
@@ -20,6 +21,13 @@ About Spreads
 spreads is a software suite for the digitization of printed material. Its main
 focus is to integrate existing solutions for individual parts of the scanning
 workflow into a cohesive package that is intuitive to use and easy to extend.
+
+.. note::
+
+    **Version 1.0.0dev Update (2025)**: spreads has been modernized with full Python 3 
+    support, comprehensive testing frameworks, and enhanced hardware compatibility. 
+    The software now includes sophisticated mock testing capabilities that enable 
+    development and testing without physical hardware.
 
 At its core, it handles the communication with the imaging devices, the
 post-processing of the captured material and its assembly into output formats
@@ -38,6 +46,13 @@ or output plugins to take advantage of a as of yet unsupported third-party
 software. There is even the possibility to :ref:`create a completely new user
 interface <add_commands>` that is better suited for specific environments.
 
+**Modern Development Features**:
+
+* **Comprehensive Testing Framework**: :doc:`Hardware-independent testing <testing>` with sophisticated mocking
+* **Python 3 Compatibility**: Full support for Python 3.8+ with modern packaging
+* **Enhanced Hardware Support**: Improved camera drivers with better error handling
+* **CI/CD Ready**: Complete testing suite for continuous integration workflows
+
 The spreads core is completely written in the Python programming language,
 which is widespread, easy to read and to learn (and beautiful on top of that).
 Individual plugins also contain parts written in JavaScript and Lua. Through
@@ -51,6 +66,10 @@ to install and configure the software yourself, head over to the
 :doc:`Installation and Setup guide <setup-other>`. If you are a user of the
 spreadpi distribution or plan on using it, use the :doc:`spreadpi guide
 <setup-spreadpi>`.
+
+For developers and contributors, the new :doc:`Testing and Development guide <testing>`
+provides comprehensive information on running tests, mock testing frameworks, and
+setting up development environments.
 
 .. TODO: Add buttons like in Sphinx or SKLearn docs to biggest points
 

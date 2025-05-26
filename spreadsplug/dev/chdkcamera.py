@@ -27,6 +27,12 @@ except ImportError:
         metadata.write()
         return metadata.buffer
 
+# Python 3 compatibility fix
+try:
+    unicode
+except NameError:
+    unicode = str
+
 
 WHITEBALANCE_MODES = {
     'Auto': 0,

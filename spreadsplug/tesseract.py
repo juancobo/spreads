@@ -246,6 +246,6 @@ class TesseractPlugin(HookPlugin, ProcessHooksMixin):
                 body.append(page_elem)
         with outfile.open('w', encoding='utf-8') as fp:
             # Strip those annoying namespace tags...
-            out_string = re.sub(r"(<\/*)html:", r"\g<1>",
-                                ET.tostring(out_root))
-            fp.write(str(out_string))
+            out_string = ET.tostring(out_root, encoding='unicode')
+            out_string = re.sub(r"(<\/*)html:", r"\g<1>", out_string)
+            fp.write(out_string)

@@ -116,7 +116,7 @@ def test_configure(config, mock_input, mock_getch):
 def test_capture(tty, termios, stdin, select, config, capsys, tmpdir):
     select.return_value = ([stdin], [], [])
     stdin.read.side_effect = chain(repeat('b', 3), 'r', 'f')
-    config['path'] = unicode(tmpdir)
+    config['path'] = str(tmpdir)
     cli.capture(config)
     assert stdin.read.call_count == 5
     last_status = capsys.readouterr()[0].split('\r')[-1]
@@ -124,7 +124,7 @@ def test_capture(tty, termios, stdin, select, config, capsys, tmpdir):
 
 
 def test_capture_nodevices(config, tmpdir):
-    config['path'] = unicode(tmpdir)
+    config['path'] = str(tmpdir)
     TestDriver.num_devices = 0
     with pytest.raises(DeviceException):
         cli.capture(config)
@@ -132,7 +132,7 @@ def test_capture_nodevices(config, tmpdir):
 
 
 def test_capture_no_target_page(config, tmpdir):
-    config['path'] = unicode(tmpdir)
+    config['path'] = str(tmpdir)
     TestDriver.target_pages = False
     with pytest.raises(DeviceException):
         cli.capture(config)
@@ -140,14 +140,14 @@ def test_capture_no_target_page(config, tmpdir):
 
 
 def test_postprocess(config, tmpdir):
-    config['path'] = unicode(tmpdir)
+    config['path'] = str(tmpdir)
     # NOTE: Nothing to assert here, we just check that it runs with our dummy
     # environment
     cli.postprocess(config)
 
 
 def test_output(config, tmpdir):
-    config['path'] = unicode(tmpdir)
+    config['path'] = str(tmpdir)
     # NOTE: Nothing to assert here, we just check that it runs with our dummy
     # environment
     cli.output(config)
@@ -187,7 +187,7 @@ def test_setup_parser(config):
 def test_main(exists, mock_cfgcls, config, tmpdir):
     config["loglevel"] = "info"
     config["verbose"] = False
-    config["logfile"] = unicode(tmpdir.join('spreads.log'))
+    config["logfile"] = str(tmpdir.join('spreads.log'))
     mock_cfgcls.return_value = config
     exists.return_value = False
     # NOTE: We mock out parser, since it interferes with pytest's parser
