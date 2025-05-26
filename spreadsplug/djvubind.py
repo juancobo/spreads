@@ -20,8 +20,6 @@
 If there is hOCR data for a page, a hidden OCR-layer will be included.
 """
 
-from __future__ import division, unicode_literals
-
 import logging
 import os
 import shutil
@@ -69,8 +67,8 @@ class DjvuBindPlugin(HookPlugin, OutputHooksMixin):
         # TODO: Add table of contents
 
         djvu_file = target_path/"book.djvu"
-        cmd = ["djvubind", unicode(tmpdir), '--no-ocr']
+        cmd = ["djvubind", str(tmpdir), '--no-ocr']
         logger.debug("Running " + " ".join(cmd))
         subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        os.rename("book.djvu", unicode(djvu_file))
-        shutil.rmtree(unicode(tmpdir))
+        os.rename("book.djvu", str(djvu_file))
+        shutil.rmtree(str(tmpdir))

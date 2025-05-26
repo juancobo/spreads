@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import argparse
 import codecs
 import datetime
@@ -10,7 +8,10 @@ import os
 import shutil
 import sys
 import tempfile
-from collections import MutableMapping
+try:
+    from collections.abc import MutableMapping
+except ImportError:
+    from collections import MutableMapping
 from itertools import chain
 try:
     from collections import OrderedDict

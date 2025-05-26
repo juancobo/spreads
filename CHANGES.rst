@@ -1,3 +1,24 @@
+1.0.0 (2025/05/25)
+    Python 3 Migration & Modernization
+    
+    - Migrate from Python 2.7 to Python 3.8+
+    - Drop support for Python 2.7 (End of Life since 2020)
+    - Update all Python dependencies to current secure versions:
+      * colorama 0.2.4 → 0.4.6
+      * PyYAML 3.10 → 6.0.2 (multiple security fixes)
+      * blinker 1.3 → 1.9.0
+      * roman 2.0.0 → 4.2
+      * psutil 2.0.0 → 6.1.0
+      * isbnlib 3.3.8 → 3.10.14
+    - Remove Python 2-only dependencies (futures, enum34, pathlib)
+    - Replace PySide with PySide6 for GUI support
+    - Update Flask and web dependencies for security
+    - Modernize CI: Travis CI → GitHub Actions support
+    - Fix unicode/basestring references for Python 3 compatibility
+    - Replace raw_input() with input()
+    - Update setuptools configuration
+    - Comprehensive security vulnerability fixes
+
 0.4.2 (2014/01/05)
     - Fix packaging issues
     - Small bugfix for older Tesseract versions

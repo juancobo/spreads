@@ -21,8 +21,6 @@ These comprise the majority of the RESTful HTTP API. The other parts can be
 found in the :py:mod:`handlers` module.
 """
 
-from __future__ import division
-
 import functools
 import itertools
 import logging
@@ -248,13 +246,13 @@ def _list_plugins():
     config = app.config['default_config']
     plugins = plugin.get_plugins(*config['plugins'].get())
     return {
-        'capture': [name for name, cls in plugins.iteritems()
+        'capture': [name for name, cls in plugins.items()
                     if issubclass(cls, plugin.CaptureHooksMixin)],
-        'trigger': [name for name, cls in plugins.iteritems()
+        'trigger': [name for name, cls in plugins.items()
                     if issubclass(cls, plugin.TriggerHooksMixin)],
-        'postprocessing': [name for name, cls in plugins.iteritems()
+        'postprocessing': [name for name, cls in plugins.items()
                            if issubclass(cls, plugin.ProcessHooksMixin)],
-        'output': [name for name, cls in plugins.iteritems()
+        'output': [name for name, cls in plugins.items()
                    if issubclass(cls, plugin.OutputHooksMixin)]
     }
 
@@ -283,10 +281,10 @@ def _get_templates():
                      if section in itertools.chain(*plugins.values()) or
                      section in ('core', 'device', 'web')}
     rv = dict()
-    for plugname, options in templates.iteritems():
+    for plugname, options in templates.items():
         if options is None:
             continue
-        for key, option in options.iteritems():
+        for key, option in options.items():
             if option.selectable:
                 value = [config[plugname][key].get()]
                 value += [x for x in option.value if x not in value]
@@ -705,7 +703,7 @@ def get_output_file(workflow, fname):
         raise ApiException("Could not find file with name '{0}' amongst "
                            "output files for workflow '{1}'"
                            .format(fname, workflow.id), 404)
-    return send_file(unicode(fpath))
+    return send_file(str(fpath))
 
 
 # =============== #
@@ -846,7 +844,7 @@ def get_page_image(fpath, page, workflow, number, img_type, plugname):
         return convert_image(fpath, img_format)
     else:
         # Send unmodified if no scaling/converting is requested
-        return send_file(unicode(fpath))
+        return send_file(str(fpath))
 
 
 @app.route('/api/workflow/<workflow:workflow>/page/<int:number>/<img_type>/'
@@ -891,7 +889,7 @@ def crop_workflow_image(workflow, number, img_type, plugname, page):
     top = int(request.args.get('top', 0))
     width = int(request.args.get('width', 0)) or None
     height = int(request.args.get('height', 0)) or None
-    workflow.crop_page(page, left, top, width, height, async=True)
+    workflow.crop_page(page, left, top, width, height, run_async=True)
     cache_key = "{0}.{1}.{2}".format(workflow.id, 'raw', page.raw_image.name)
     cache.delete(cache_key)
     return 'OK'
@@ -919,7 +917,7 @@ def prepare_capture(workflow):
     """ Prepare capture for the requested workflow. """
     # Check if any other workflow is active and finish, if neccessary
     logger.debug("Finishing previous workflows")
-    wfitems = Workflow.find_all(app.config['base_path'], key='id').iteritems()
+    wfitems = Workflow.find_all(app.config['base_path'], key='id').items()
     for wfid, wf in wfitems:
         if wf.status['step'] == 'capture' and wf.status['prepared']:
             if wf is workflow and not request.args.get('reset'):

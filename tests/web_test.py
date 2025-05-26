@@ -17,7 +17,7 @@ def app(config, tmpdir):
     config.load_defaults(overwrite=False)
 
     config['web']['mode'] = 'full'
-    config['web']['project_dir'] = unicode(tmpdir.join('workflows'))
+    config['web']['project_dir'] = str(tmpdir.join('workflows'))
     config['web']['debug'] = False
     config['web']['standalone_device'] = True
     config['web']['postprocessing_server'] = ''
@@ -46,7 +46,7 @@ def mock_dbus(tmpdir):
         stickdir.mkdir()
         mockdevs = [mock.Mock(), mock.Mock()]*2
         mockobj = mock.MagicMock()
-        mockobj.get_dbus_method.return_value.return_value = unicode(
+        mockobj.get_dbus_method.return_value.return_value = str(
             stickdir)
         mockobj.EnumerateDevices.return_value = mockdevs
         mockobj.Get.side_effect = [True, 'usb', True]*2
@@ -72,7 +72,7 @@ def create_workflow(client, num_captures='random'):
                       data=json.dumps(workflow)).data)
     if num_captures:
         client.post('/api/workflow/{0}/prepare_capture'.format(data['id']))
-        for _ in xrange(random.randint(1, 4)
+        for _ in range(random.randint(1, 4)
                         if num_captures == 'random' else num_captures):
             client.post('/api/workflow/{0}/capture'.format(data['id']))
         client.post('/api/workflow/{0}/finish_capture'.format(data['id']))
@@ -131,7 +131,7 @@ def test_create_workflow(client):
 
 
 def test_list_workflows(client):
-    for _ in xrange(5):
+    for _ in range(5):
         create_workflow(client)
     data = json.loads(client.get('/api/workflow').data)
     assert isinstance(data, list)

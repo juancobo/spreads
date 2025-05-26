@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 import os
 import re
 import shutil
@@ -31,9 +31,9 @@ commands by implementing one of the available plugin hooks or even implement
 your own custom sub-commands.
 """
 
-VERSION = '0.5git{0}.{1}'.format(
+VERSION = '1.0.0dev{0}.{1}'.format(
     datetime.today().strftime('%Y%m%d'),
-    check_output('git rev-parse HEAD'.split())[:4])
+    check_output('git rev-parse HEAD'.split())[:4].decode('utf-8'))
 
 
 def build_frontend_bundles():
@@ -95,7 +95,12 @@ setup(
         ("License :: OSI Approved :: GNU Affero General Public License v3 or "
          "later (AGPLv3+)"),
         "Operating System :: POSIX",
-        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Topic :: Multimedia :: Graphics :: Capture",
         "Topic :: Multimedia :: Graphics :: Graphics Conversion",
     ],
@@ -142,29 +147,26 @@ setup(
         ]
     },
     install_requires=[
-        "colorama >= 0.2.4",
-        "PyYAML >= 3.10",
-        "futures >= 2.1",
-        "blinker >= 1.3",
-        "roman >= 2.0.0",
-        "psutil >= 2.0.0",
-        "isbnlib >= 3.3.8",
-        "enum34 >= 1.0.3",
-        "pathlib >= 1.0.1",
+        "colorama >= 0.4.6",
+        "PyYAML >= 6.0.2",
+        "blinker >= 1.9.0", 
+        "roman >= 4.2",
+        "psutil >= 6.1.0",
+        "isbnlib >= 3.10.14",
     ],
     extras_require={
-        "chdkcamera": ["jpegtran-cffi >= 0.4", "chdkptp.py >= 0.1.3"],
-        "gphoto2camera": ["gphoto2-cffi >= 0.2,<0.3"],
-        "autorotate": ["jpegtran-cffi >= 0.4"],
-        "gui": ["PySide >= 1.2.1"],
-        "hidtrigger": ["hidapi-cffi >= 0.1"],
+        "chdkcamera": ["jpegtran-cffi >= 0.5.2", "chdkptp.py >= 0.1.3"],
+        "gphoto2camera": ["gphoto2-cffi >= 0.4.3"],
+        "autorotate": ["jpegtran-cffi >= 0.5.2"],
+        "gui": ["PySide6 >= 6.8.0"],
+        "hidtrigger": ["hidapi >= 0.14.0"],
         "web": [
-            "Flask >= 0.10.1",
-            "jpegtran-cffi >= 0.4",
-            "requests >= 2.2.0",
-            "zipstream >= 1.0.2,<1.1.0",
-            "tornado >= 4.0",
-            "Wand >= 0.3.5",
+            "Flask >= 3.0.3",
+            "jpegtran-cffi >= 0.5.2",
+            "requests >= 2.32.3",
+            "zipstream-ng >= 1.7.1",
+            "tornado >= 6.4.2",
+            "Wand >= 0.6.13",
         ]
     },
     cmdclass={'sdist': CustomSdistCommand,

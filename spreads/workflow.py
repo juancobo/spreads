@@ -20,8 +20,6 @@ Central :py:class:`Workflow` entity (and its signals) and various associated
 entities.
 """
 
-from __future__ import division, unicode_literals
-
 import copy
 import logging
 import shutil
@@ -165,7 +163,7 @@ class Page(object):
             # TODO: Add support for letter numbering (e.g. 'a' -> 1,
             #       'aa' -> 27, 'zz' -> 52, etc)
             # TODO: Add support for prefixes (e.g. 'A-1')
-            valid_string = (isinstance(page_label, basestring) and
+            valid_string = (isinstance(page_label, str) and
                             (page_label.isdigit() or
                              util.RomanNumeral.is_roman(page_label.upper())))
             if not isinstance(page_label, int) and not valid_string:
@@ -175,7 +173,7 @@ class Page(object):
                                 "type"))
             self.page_label = str(page_label)
         else:
-            self.page_label = unicode(self.sequence_num)
+            self.page_label = str(self.sequence_num)
 
     def get_latest_processed(self, image_only=True):
         """ Get the least recent postprocessed file
@@ -409,7 +407,7 @@ class Workflow(object):
             raise util.SpreadsException(
                 "Cannot remove a workflow while it is busy."
                 " (active step: '{0}')".format(workflow.status['step']))
-        shutil.rmtree(unicode(workflow.path))
+        shutil.rmtree(str(workflow.path))
         cls._cache[workflow.path.parent].remove(workflow)
         on_removed.send(senderId=workflow.id)
 
@@ -436,11 +434,11 @@ class Workflow(object):
             self.config = self._load_config(config)
 
         try:
-            self.bag = bagit.Bag(unicode(self.path))
+            self.bag = bagit.Bag(str(self.path))
         except bagit.BagError:
             if self.config['core']['convert_old'].get(bool):
                 # Convert non-bagit directories from older versions
-                self.bag = bagit.Bag.convert_directory(unicode(self.path))
+                self.bag = bagit.Bag.convert_directory(str(self.path))
                 self.pages = [Page(img)
                               for img in (self.path/'data'/'raw').iterdir()]
                 self._save_pages()
@@ -450,9 +448,9 @@ class Workflow(object):
                     "to BagIt convertions and automatic conversion has been "
                     "disabled (check `convert_old` setting)")
         if not self.slug:
-            self.slug = util.slugify(unicode(self.path.name))
+            self.slug = util.slugify(str(self.path.name))
         if not self.id:
-            self.id = unicode(uuid.uuid4())
+            self.id = str(uuid.uuid4())
         #: :py:class:`spreads.metadata.Metadata` instance that backs the
         #: corresponding getter and setter
         self._metadata = Metadata(self.path)
@@ -476,7 +474,7 @@ class Workflow(object):
         plugin_classes = [
             (name, cls)
             for name, cls in plugin.get_plugins(*self.config["plugins"]
-                                                .get()).iteritems()
+                                                .get()).items()
             if not cls.__bases__ == (plugin.SubcommandHooksMixin,)]
         self._plugins = [cls(self.config) for name, cls in plugin_classes]
         self.config['plugins'] = [name for name, cls in plugin_classes]
@@ -601,7 +599,7 @@ class Workflow(object):
         self._save_pages()
         self.bag.update_payload(fast=True)
 
-    def crop_page(self, page, left, top, width=None, height=None, async=False):
+    def crop_page(self, page, left, top, width=None, height=None, run_async=False):
         """ Crop a page's raw image.
 
         :param page:    Page the raw image of which should be cropped
@@ -609,8 +607,8 @@ class Workflow(object):
         :param top:     Y coordinate of crop boundary
         :param width:   Width of crop box
         :param height:  Height of crop box
-        :param async:   Perform the cropping in a background thread
-        :return:        The Future object when ``async`` was ``True``
+        :param run_async:   Perform the cropping in a background thread
+        :return:        The Future object when ``run_async`` was ``True``
         :rtype:         :py:class:`concurrent.futures.Future`
         """
         # FIXME: Does this really have to be a Workflow method?
@@ -641,8 +639,8 @@ class Workflow(object):
                 self._logger.error("Cropping failed")
                 self._logger.exception(e)
 
-        fname = unicode(page.raw_image)
-        if async:
+        fname = str(page.raw_image)
+        if run_async:
             future = self._threadpool.submit(do_crop, fname, left, top, width,
                                              height)
             self._pending_tasks.append(future)
@@ -712,8 +710,8 @@ class Workflow(object):
         cfg_file = self.path / 'config.yml'
         if value is None and cfg_file.exists():
             # Load workflow-specific configuration from file
-            value = confit.ConfigSource(confit.load_yaml(unicode(cfg_file)),
-                                        unicode(cfg_file))
+            value = confit.ConfigSource(confit.load_yaml(str(cfg_file)),
+                                        str(cfg_file))
         if value is not None:
             # Load configuration from supplied ConfigSource or dictionary
             config = config.with_overlay(value)
@@ -724,9 +722,9 @@ class Workflow(object):
         # Only save configuration from active plugins in addition to plugin
         # selection and device configuration
         self.config.dump(
-            unicode(cfg_path), True,
+            str(cfg_path), True,
             self.config["plugins"].get() + ["plugins", "device"])
-        self.bag.add_tagfiles(unicode(cfg_path))
+        self.bag.add_tagfiles(str(cfg_path))
 
     def _load_toc(self, data=None):
         """ Load TOC entries from ``toc.json`` in bag or a passed list of
@@ -766,7 +764,7 @@ class Workflow(object):
         with toc_path.open('wb') as fp:
             json.dump([x.to_dict() for x in self.table_of_contents], fp,
                       cls=util.CustomJSONEncoder, indent=2, ensure_ascii=False)
-        self.bag.add_tagfiles(unicode(toc_path))
+        self.bag.add_tagfiles(str(toc_path))
         on_modified.send(self,
                          changes={'table_of_contents': self.table_of_contents})
 
@@ -779,7 +777,7 @@ class Workflow(object):
         def from_dict(dikt):
             raw_image = self.path/dikt['raw_image']
             processed_images = {}
-            for plugname, fpath in dikt['processed_images'].iteritems():
+            for plugname, fpath in dikt['processed_images'].items():
                 relpath = self.path/fpath
                 if relpath.exists():
                     processed_images[plugname] = relpath
@@ -805,7 +803,7 @@ class Workflow(object):
         with fpath.open('wb') as fp:
             json.dump([x.to_dict() for x in self.pages], fp,
                       cls=util.CustomJSONEncoder, indent=2, ensure_ascii=False)
-        self.bag.add_tagfiles(unicode(fpath))
+        self.bag.add_tagfiles(str(fpath))
         on_modified.send(self, changes={'pages': self.pages})
 
     def _run_hook(self, hook_name, *args):
@@ -940,7 +938,7 @@ class Workflow(object):
             self._run_hook('capture', self.devices, self.path)
             # Queue new images for hashing
             future = self._threadpool.submit(self.bag.add_payload,
-                                             *(unicode(p.raw_image)
+                                             *(str(p.raw_image)
                                                for p in captured_pages))
             self._pending_tasks.append(future)
 
@@ -973,7 +971,7 @@ class Workflow(object):
         if not processed_path.exists():
             processed_path.mkdir()
         self._run_hook('process', self.pages, processed_path)
-        self.bag.add_payload(unicode(processed_path))
+        self.bag.add_payload(str(processed_path))
         self._save_pages()
         self._logger.info("Done with postprocessing!")
 

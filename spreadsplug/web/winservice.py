@@ -3,8 +3,6 @@
 SysTrayIcon class by Simon Brunning <simon@brunningonline.net>, 2005
 """
 
-from __future__ import print_function
-
 import os
 import win32api
 import win32con
@@ -195,4 +193,4 @@ def non_string_iterable(obj):
     except TypeError:
         return False
     else:
-        return not isinstance(obj, basestring)
+        return not isinstance(obj, str)

@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import division
-
 import logging
 import mimetypes
 import os
@@ -75,7 +73,7 @@ class CustomJSONEncoder(JSONEncoder):
         elif isinstance(obj, Event):
             return self._event_to_dict(obj)
         elif isinstance(obj, Path):
-            return mimetypes.guess_type(unicode(obj))[0]
+            return mimetypes.guess_type(str(obj))[0]
         elif isinstance(obj, datetime):
             # Return datetime as an epoch timestamp with microsecond-resolution
             return (time.mktime(obj.timetuple())*1000 + obj.microsecond)/1000.0
@@ -93,7 +91,7 @@ class CustomJSONEncoder(JSONEncoder):
             'out_files': [{'name': path.name,
                            'mimetype': path}
                           for path in workflow.out_files],
-            'config': {k: v for k, v in workflow.config.flatten().iteritems()
+            'config': {k: v for k, v in workflow.config.flatten().items()
                        if k in workflow.config['plugins'].get() or
                        k in ('device', 'plugins')}
         }
@@ -169,7 +167,7 @@ class GeneratorIO(BufferedIOBase):
 
 
 def convert_image(img_path, img_format):
-    with Image(filename=unicode(img_path)) as img:
+    with Image(filename=str(img_path)) as img:
         return img.make_blob(format=img_format)
 
 
@@ -183,11 +181,11 @@ def scale_image(img_path, width=None, height=None):
     if width is None and height is None:
         raise ValueError("Please specify either width or height")
     if HAS_JPEGTRAN and img_path.suffix.lower() in ('.jpg', '.jpeg'):
-        img = JPEGImage(unicode(img_path))
+        img = JPEGImage(str(img_path))
         width, height = get_target_size(img.width, img.height)
         return img.downscale(width, height).as_blob()
     else:
-        with Image(filename=unicode(img_path)) as img:
+        with Image(filename=str(img_path)) as img:
             width, height = get_target_size(img.width, img.height)
             img.sample(width, height)
             return img.make_blob(format='jpg')
@@ -202,7 +200,7 @@ def get_thumbnail(img_path):
     :rtype:           bytestring
     """
     if HAS_JPEGTRAN and img_path.suffix.lower() in ('.jpg', '.jpeg'):
-        img = JPEGImage(unicode(img_path))
+        img = JPEGImage(str(img_path))
         thumb = img.exif_thumbnail
         if thumb:
             logger.debug("Using EXIF thumbnail for {0}".format(img_path))

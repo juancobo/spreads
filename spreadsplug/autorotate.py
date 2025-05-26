@@ -21,8 +21,6 @@
     orientation tag.
 """
 
-from __future__ import unicode_literals
-
 import logging
 import shutil
 
@@ -164,8 +162,8 @@ class AutoRotatePlugin(HookPlugin, ProcessHooksMixin):
                     continue
                 out_path = target_path/(in_path.stem + "_rotated.jpg")
                 future = executor.submit(autorotate_image,
-                                         unicode(in_path),
-                                         unicode(out_path))
+                                         str(in_path),
+                                         str(out_path))
                 future.add_done_callback(
                     self._get_progress_callback(idx, num_total)
                 )

@@ -19,8 +19,6 @@
 Configuration entities.
 """
 
-from __future__ import unicode_literals
-
 import copy
 import logging
 
@@ -71,7 +69,7 @@ CORE_OPTIONS = {
     'verbose': OptionTemplate(value=False,
                               docstring="Enable verbose output"),
     'logfile': OptionTemplate(
-        value=unicode(Path(util.get_data_dir())/'spreads.log'),
+        value=str(Path(util.get_data_dir())/'spreads.log'),
         docstring="Path to logfile"),
     'loglevel': OptionTemplate(value=['info', 'critical', 'error',
                                       'warning', 'debug'],
@@ -149,7 +147,7 @@ class Configuration(object):
                 spreads.plugin.get_driver(driver_name)
                        .configuration_template())
         plugins = spreads.plugin.get_plugins(*self["plugins"].get())
-        for name, plugin in plugins.iteritems():
+        for name, plugin in plugins.items():
             tmpl = plugin.configuration_template()
             if tmpl:
                 self.templates[name] = tmpl
@@ -188,7 +186,7 @@ class Configuration(object):
 
         :param overwrite:   Whether to overwrite already existing values
         """
-        for section, template in self.templates.iteritems():
+        for section, template in self.templates.items():
             self.set_from_template(section, template, overwrite)
 
     def set_from_template(self, section, template, overwrite=True):
@@ -201,7 +199,7 @@ class Configuration(object):
         """
         old_settings = self[section].flatten()
         settings = copy.deepcopy(old_settings)
-        for key, option in template.iteritems():
+        for key, option in template.items():
             logging.info("Adding setting {0} from {1}"
                          .format(key, section))
             if not overwrite and key in old_settings:
@@ -218,7 +216,7 @@ class Configuration(object):
         :param args:    Parsed command-line arguments
         :type args:     :py:class:`argparse.Namespace`
         """
-        for argkey, value in args.__dict__.iteritems():
+        for argkey, value in args.__dict__.items():
             skip = (value is None or
                     argkey == 'subcommand' or
                     argkey.startswith('_'))

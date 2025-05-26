@@ -2,7 +2,7 @@
 import logging
 import os
 import time
-import urllib2
+import urllib.request
 
 from jpegtran import JPEGImage
 from wand.drawing import Drawing
@@ -52,7 +52,7 @@ class DummyDevice(DeviceDriver):
         if any(not p.exists() for p in self._test_imgs.values()):
             for target, img_path in self._test_imgs.items():
                 with img_path.open('wb') as fp:
-                    fp.write(urllib2.urlopen(
+                    fp.write(urllib.request.urlopen(
                         "http://jbaiter.de/files/{0}.jpg".format(target)
                     ).read())
         self.target_page = target_page
@@ -104,4 +104,4 @@ class DummyDevice(DeviceDriver):
         pass
 
     def show_textbox(self, msg):
-        print "DISPLAY ON {0} device:\n{1}".format(self.target_page, msg)
+        print("DISPLAY ON {0} device:\n{1}".format(self.target_page, msg))

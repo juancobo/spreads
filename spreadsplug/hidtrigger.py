@@ -17,8 +17,6 @@
 
 """ Trigger plugin that waits for a key press on any USB HID device. """
 
-from __future__ import unicode_literals
-
 import hidapi
 import logging
 import threading

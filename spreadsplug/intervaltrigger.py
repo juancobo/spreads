@@ -17,8 +17,6 @@
 
 """ Trigger plugin that triggers in a configurable interval. """
 
-from __future__ import unicode_literals
-
 import logging
 import threading
 import time

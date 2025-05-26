@@ -19,8 +19,6 @@
 Core logic for application startup and parsing of command-line arguments
 """
 
-from __future__ import division, unicode_literals, print_function
-
 import argparse
 import logging
 import logging.handlers
@@ -59,8 +57,8 @@ def add_argument_from_template(extname, key, template, parser, current_val):
     kwargs = {'help': ("{0} [default: {1}]"
                        .format(template.docstring, default)),
               'dest': "{0}{1}".format(extname, '.'+key if extname else key)}
-    if isinstance(template.value, basestring) or template.value is None:
-        kwargs['type'] = unicode
+    if isinstance(template.value, str) or template.value is None:
+        kwargs['type'] = str
         kwargs['metavar'] = "<str>"
     elif isinstance(template.value, bool):
         kwargs['help'] = template.docstring
@@ -126,11 +124,11 @@ def setup_parser(config):
             # Only plugins that implement the capture or trigger hook mixins
             # and the currently active device configuration are relevant for
             # this subcommand.
-            ext_names = [name for name, cls in plugins.iteritems()
+            ext_names = [name for name, cls in plugins.items()
                          if any(issubclass(cls, mixin) for mixin in mixins)]
             ext_names.extend(extra_names)
             for ext in ext_names:
-                for key, tmpl in config.templates.get(ext, {}).iteritems():
+                for key, tmpl in config.templates.get(ext, {}).items():
                     if not should_show_argument(option,
                                                 config['plugins'].get()):
                         continue
@@ -155,7 +153,7 @@ def setup_parser(config):
             "https://github.com/DIYBookScanner/spreads/graphs/contributors\n\n"
             .format(util.get_version())))
 
-    for key, option in config.templates['core'].iteritems():
+    for key, option in config.templates['core'].items():
         if not should_show_argument(option, config['plugins'].get()):
             continue
         try:

@@ -14,7 +14,6 @@
 
 """Worry-free YAML configuration files.
 """
-from __future__ import unicode_literals
 import platform
 import os
 import pkgutil
@@ -43,10 +42,10 @@ YAML_TAB_PROBLEM = "found character '\\t' that cannot start any token"
 # Utilities.
 
 PY3 = sys.version_info[0] == 3
-STRING = str if PY3 else unicode
-BASESTRING = str if PY3 else basestring
-NUMERIC_TYPES = (int, float) if PY3 else (int, float, long)
-TYPE_TYPES = (type,) if PY3 else (type, types.ClassType)
+STRING = str
+BASESTRING = str
+NUMERIC_TYPES = (int, float)
+TYPE_TYPES = (type,)
 
 def iter_first(sequence):
     """Get the first element from an iterable or raise a ValueError if
@@ -222,7 +221,7 @@ class ConfigView(object):
         """Gets the value for this view as a unicode string. (Python 2
         only.)
         """
-        return unicode(self.get())
+        return str(self.get())
 
     def __nonzero__(self):
         """Gets the value for this view as a boolean. (Python 2 only.)

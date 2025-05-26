@@ -1,5 +1,3 @@
-from __future__ import division, unicode_literals
-
 import pytest
 import spreads.vendor.bagit as bagit
 from mock import Mock
@@ -11,23 +9,23 @@ from conftest import TestDriver
 
 @pytest.fixture
 def workflow(config, tmpdir):
-    return spreads.workflow.Workflow(config=config, path=unicode(tmpdir))
+    return spreads.workflow.Workflow(config=config, path=str(tmpdir))
 
 
 def test_convert_old_workflow(config, tmpdir):
     tmpdir.join('test.txt').open('w').close()
     tmpdir.join('raw').mkdir()
-    for num in xrange(10):
+    for num in range(10):
         tmpdir.join('raw', '{0:03}.jpg'.format(num)).open('w').close()
     config['core']['convert_old'] = False
     with pytest.raises(bagit.BagError):
-        spreads.workflow.Workflow(config=config, path=unicode(tmpdir))
+        spreads.workflow.Workflow(config=config, path=str(tmpdir))
     config['core']['convert_old'] = True
-    wf = spreads.workflow.Workflow(config=config, path=unicode(tmpdir))
+    wf = spreads.workflow.Workflow(config=config, path=str(tmpdir))
     assert len(wf.pages) == 10
     assert tmpdir.join('bagit.txt').check()
     assert tmpdir.join('data', 'test.txt').check()
-    for num in xrange(10):
+    for num in range(10):
         assert tmpdir.join('data', 'raw', '{0:03}.jpg'.format(num)).check()
 
 

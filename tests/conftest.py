@@ -96,7 +96,7 @@ class TestDriver(plugin.DeviceDriver):
 
     @classmethod
     def yield_devices(cls, config):
-        for idx in xrange(cls.num_devices):
+        for idx in range(cls.num_devices):
             instance = cls(config, None)
             if cls.target_pages:
                 instance.set_target_page('odd' if idx % 2 else 'even')
@@ -121,7 +121,7 @@ class TestDriver(plugin.DeviceDriver):
         srcpath = os.path.abspath(
             './tests/data/{0}.jpg'.format(self.target_page or 'even')
         )
-        shutil.copyfile(srcpath, unicode(path))
+        shutil.copyfile(srcpath, str(path))
 
     def finish_capture(self):
         pass

@@ -20,8 +20,6 @@ Public plugin API (realized through a range of abstract classes) and utility
 functions for enumerating and loading plugins.
 """
 
-from __future__ import division, unicode_literals
-
 import abc
 import logging
 from collections import OrderedDict

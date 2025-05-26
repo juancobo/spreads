@@ -40,7 +40,7 @@ def plugin(pluginclass, config):
 @mock.patch('spreads.util.get_subprocess')
 def test_generate_configuration(get_sp, proc, plugin):
     proc.return_value.is_running.return_value = False
-    in_paths = ['{0:03}.jpg'.format(idx) for idx in xrange(5)]
+    in_paths = ['{0:03}.jpg'.format(idx) for idx in range(5)]
     proj_file = Path('/tmp/foo.st')
     out_dir = Path('/tmp/out')
     plugin._generate_configuration(in_paths, proj_file, out_dir)
@@ -53,9 +53,9 @@ def test_split_configuration(plugin, tmpdir):
     with mock.patch('spreadsplug.scantailor.multiprocessing.cpu_count') as cnt:
         cnt.return_value = 4
         splitfiles = plugin._split_configuration(
-            Path('./tests/data/test.scanTailor'), Path(unicode(tmpdir)))
+            Path('./tests/data/test.scanTailor'), Path(str(tmpdir)))
     assert len(splitfiles) == 4
-    tree = ET.parse(unicode(splitfiles[0]))
+    tree = ET.parse(str(splitfiles[0]))
     for elem in ('files', 'images', 'pages', 'file-name-disambiguation'):
         assert len(tree.find('./{0}'.format(elem))) == 7
 
@@ -76,8 +76,8 @@ def test_process(get_sp, plugin, tmpdir):
     plugin._generate_output = create_out_files
     plugin.config['autopilot'] = True
 
-    pages = [Page(Path('{0:03}.jpg'.format(idx))) for idx in xrange(5)]
-    target_dir = Path(unicode(tmpdir))
+    pages = [Page(Path('{0:03}.jpg'.format(idx))) for idx in range(5)]
+    target_dir = Path(str(tmpdir))
     plugin.process(pages, target_dir)
     assert get_sp.call_count == 0
     for p in pages:

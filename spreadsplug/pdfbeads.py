@@ -23,8 +23,6 @@ compressed with JBIG2 and an image layer that is compressed with JPEG2000.
 If there is hOCR data for a page, a hidden OCR-layer will be included.
 """
 
-from __future__ import division, unicode_literals
-
 import codecs
 import logging
 import os
@@ -70,8 +68,8 @@ class PDFBeadsPlugin(HookPlugin, OutputHooksMixin):
         tmpdir = Path(tempfile.mkdtemp())
 
         meta_file = tmpdir/'metadata.txt'
-        with codecs.open(unicode(meta_file), "w", "utf-8") as fp:
-            for key, value in metadata.iteritems():
+        with codecs.open(str(meta_file), "w", "utf-8") as fp:
+            for key, value in metadata.items():
                 if key == 'title':
                     fp.write("Title: \"{0}\"\n".format(value))
                 if key == 'creator':
@@ -85,14 +83,14 @@ class PDFBeadsPlugin(HookPlugin, OutputHooksMixin):
                 fpath = page.raw_image
             link_path = (tmpdir/fpath.name)
             if IS_WIN:
-                shutil.copy(unicode(fpath), unicode(link_path))
+                shutil.copy(str(fpath), str(link_path))
             else:
                 link_path.symlink_to(fpath.absolute())
             if 'tesseract' in page.processed_images:
                 ocr_path = page.processed_images['tesseract']
                 if IS_WIN:
-                    shutil.copy(unicode(ocr_path),
-                                unicode(tmpdir/ocr_path.name))
+                    shutil.copy(str(ocr_path),
+                                str(tmpdir/ocr_path.name))
                 else:
                     (tmpdir/ocr_path.name).symlink_to(ocr_path.absolute())
             images.append(link_path.absolute())
@@ -105,14 +103,14 @@ class PDFBeadsPlugin(HookPlugin, OutputHooksMixin):
         # NOTE: pdfbeads only finds *html files for the text layer in the
         #       working directory, so we have to chdir() into it
         old_path = os.path.abspath(os.path.curdir)
-        os.chdir(unicode(tmpdir))
+        os.chdir(str(tmpdir))
 
-        cmd = [BIN, "-d", "-M", unicode(meta_file)]
+        cmd = [BIN, "-d", "-M", str(meta_file)]
         if IS_WIN:
             cmd.append(util.wildcardify(tuple(f.name for f in images)))
         else:
-            cmd.extend([unicode(f) for f in images])
-        cmd.extend(["-o", unicode(pdf_file)])
+            cmd.extend([str(f) for f in images])
+        cmd.extend(["-o", str(pdf_file)])
         logger.debug("Running " + " ".join(cmd))
         proc = util.get_subprocess(cmd, stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE, shell=IS_WIN)
@@ -138,7 +136,7 @@ class PDFBeadsPlugin(HookPlugin, OutputHooksMixin):
                 progress = None
                 if prep_match:
                     file_idx = next(idx for idx, f in enumerate(images)
-                                    if unicode(f) == prep_match.group(1))
+                                    if str(f) == prep_match.group(1))
                     progress = file_idx/(len(images)*2)
                 elif jbig2_match:
                     cur_jbig2_page += int(jbig2_match.group(1))
@@ -146,7 +144,7 @@ class PDFBeadsPlugin(HookPlugin, OutputHooksMixin):
                     is_jbig2 = True
                 elif proc_match and not is_jbig2:
                     file_idx = next(idx for idx, f in enumerate(images)
-                                    if unicode(f) == proc_match.group(1))
+                                    if str(f) == proc_match.group(1))
                     progress = (len(images) + file_idx)/(len(images)*2)
                 if progress is not None:
                     self.on_progressed.send(self, progress=progress)
@@ -155,4 +153,4 @@ class PDFBeadsPlugin(HookPlugin, OutputHooksMixin):
         logger.debug("pdfbeads stdout:\n{0}".format(output))
         logger.debug("pdfbeads stderr:\n{0}".format(errors))
         os.chdir(old_path)
-        shutil.rmtree(unicode(tmpdir))
+        shutil.rmtree(str(tmpdir))

@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import division
-
 import copy
 import logging
 import shutil
@@ -67,7 +65,7 @@ def transfer_to_stick(wf_id, base_path):
             mount_point = mount('', [])
             target_path = Path(mount_point)/clean_name
         if target_path.exists():
-            shutil.rmtree(unicode(target_path))
+            shutil.rmtree(str(target_path))
         target_path.mkdir()
         signals['transfer:started'].send(workflow)
         for num, path in enumerate(files, 1):
@@ -78,7 +76,7 @@ def transfer_to_stick(wf_id, base_path):
             if path.is_dir():
                 target.mkdir()
             else:
-                shutil.copyfile(unicode(path), unicode(target))
+                shutil.copyfile(str(path), str(target))
     finally:
         if 'mount_point' in locals():
             signals['transfer:progressed'].send(workflow, progress=0.8,
@@ -106,9 +104,9 @@ def upload_workflow(wf_id, base_path, endpoint, user_config,
     tmp_cfg = copy.deepcopy(workflow.config)
     tmp_cfg.set(user_config)
     tmp_cfg_path = workflow.path/'config.yml'
-    tmp_cfg.dump(filename=unicode(tmp_cfg_path),
+    tmp_cfg.dump(filename=str(tmp_cfg_path),
                  sections=(user_config['plugins'] + ["plugins", "device"]))
-    workflow.bag.add_tagfiles(unicode(tmp_cfg_path))
+    workflow.bag.add_tagfiles(str(tmp_cfg_path))
 
     # Create a zipstream from the workflow-bag
     zstream = workflow.bag.package_as_zipstream(compression=None)

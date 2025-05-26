@@ -19,8 +19,6 @@
 Various utility functions and classes.
 """
 
-from __future__ import division, unicode_literals, print_function
-
 import abc
 import glob
 import json
@@ -128,7 +126,7 @@ def get_free_space(path):
     :rtype:         int
 
     """
-    return psutil.disk_usage(unicode(path)).free
+    return psutil.disk_usage(str(path)).free
 
 
 def get_subprocess(cmdline, **kwargs):
@@ -180,7 +178,7 @@ def diff_dicts(old, new):
     :rtype:     dict
     """
     out = {}
-    for key, value in old.iteritems():
+    for key, value in old.items():
         if new[key] != value:
             out[key] = new[key]
         elif isinstance(value, dict):
@@ -209,7 +207,7 @@ def slugify(text, delimiter=u'-'):
         word = normalize('NFKD', word).encode('ascii', 'ignore')
         if word:
             result.append(word)
-    return unicode(delimiter.join(result))
+    return str(delimiter.join(result))
 
 
 class _instancemethodwrapper(object):  # noqa
@@ -349,7 +347,7 @@ def get_data_dir(create=False):
     app_path = Path(base_dir)/'spreads'
     if create and not app_path.exists():
         app_path.mkdir()
-    return unicode(app_path)
+    return str(app_path)
 
 
 def colorize(text, color):
@@ -387,7 +385,7 @@ class RomanNumeral(object):
         """
         self._val = self._to_int(value)
         self._case = case
-        if isinstance(value, basestring) and not self.is_roman(value):
+        if isinstance(value, str) and not self.is_roman(value):
             self._case = 'lower'
         elif isinstance(value, RomanNumeral):
             self._case = value._case
@@ -395,7 +393,7 @@ class RomanNumeral(object):
     def _to_int(self, value):
         if isinstance(value, int):
             return value
-        elif isinstance(value, basestring) and self.is_roman(value.upper()):
+        elif isinstance(value, str) and self.is_roman(value.upper()):
             return roman.fromRoman(value.upper())
         elif isinstance(value, RomanNumeral):
             return value._val
@@ -428,8 +426,8 @@ class RomanNumeral(object):
         else:
             return strval
 
-    def __unicode__(self):
-        return unicode(str(self))
+    def __str__(self):
+        return str(str(self))
 
     def __repr__(self):
         return str(self)
@@ -453,7 +451,7 @@ class CustomJSONEncoder(json.JSONEncoder):
             base = next((p for p in obj.parents if (p/'bagit.txt').exists()),
                         None)
             if base:
-                return unicode(obj.relative_to(base))
+                return str(obj.relative_to(base))
             else:
-                return unicode(obj.absolute())
+                return str(obj.absolute())
         return json.JSONEncoder.default(self, obj)

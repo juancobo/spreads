@@ -22,8 +22,6 @@ The output is saved as hOCR files that can be used by other plugins (e.g.
 :py:module:`spreadsplug.djvubind` and :py:module:`spreadsplug.pdfbeads`)
 """
 
-from __future__ import unicode_literals
-
 import logging
 import multiprocessing
 import os
@@ -111,10 +109,10 @@ class TesseractPlugin(HookPlugin, ProcessHooksMixin):
             # For each hOCR file, try to find a corresponding input image
             # and associate it to the image's page
             out_stem = fname.stem
-            for in_path, page in in_paths.iteritems():
+            for in_path, page in in_paths.items():
                 if in_path.stem == out_stem:
                     target_fname = target_path/fname.name
-                    shutil.copyfile(unicode(fname), unicode(target_fname))
+                    shutil.copyfile(str(fname), str(target_fname))
                     page.processed_images[self.__name__] = target_fname
                     break
             else:
@@ -156,7 +154,7 @@ class TesseractPlugin(HookPlugin, ProcessHooksMixin):
             while len(processes) >= max_procs:
                 _clean_processes()
                 time.sleep(0.01)
-            cmd = [BIN, unicode(fpath), unicode(out_dir / fpath.stem),
+            cmd = [BIN, str(fpath), str(out_dir / fpath.stem),
                    "-l", language, "hocr"]
             logger.debug(cmd)
             proc = util.get_subprocess(cmd, stderr=devnull, stdout=devnull)
@@ -204,7 +202,7 @@ class TesseractPlugin(HookPlugin, ProcessHooksMixin):
             # Perform user-configured replacements
             if 'replacements' in self.config.keys():
                 replacements = self.config['replacements'].get()
-                for name, group in replacements.iteritems():
+                for name, group in replacements.items():
                     content = re.sub(group['regex'], group['substitution'],
                                      content, flags=get_flags(group))
         with fpath.open('w', encoding='utf-8') as fp:
@@ -248,6 +246,6 @@ class TesseractPlugin(HookPlugin, ProcessHooksMixin):
                 body.append(page_elem)
         with outfile.open('w', encoding='utf-8') as fp:
             # Strip those annoying namespace tags...
-            out_string = re.sub(r"(<\/*)html:", "\g<1>",
+            out_string = re.sub(r"(<\/*)html:", r"\g<1>",
                                 ET.tostring(out_root))
-            fp.write(unicode(out_string))
+            fp.write(str(out_string))

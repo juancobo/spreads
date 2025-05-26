@@ -118,7 +118,7 @@ class WebCommands(plugin.HookPlugin, plugin.SubcommandHooksMixin):
             )
             wincmdparser.set_defaults(subcommand=cls.run_windows_service)
 
-        for key, option in cls.configuration_template().iteritems():
+        for key, option in cls.configuration_template().items():
             if not should_show_argument(option, config['plugins'].get()):
                 continue
             try:

@@ -19,8 +19,6 @@
 Command-Line interface for configuration, capture, output and postprocessing.
 """
 
-from __future__ import division, unicode_literals, print_function
-
 import sys
 import time
 
@@ -84,14 +82,14 @@ def _select_driver(current):
     for pos, ext in enumerate(available_drivers, 1):
         print("  [{0}]: {1}".format(pos, ext))
     while True:
-        selection = raw_input("Select a driver: ")
+        selection = input("Select a driver: ")
         if not selection or int(selection) == 0:
             return current
         if not selection.isdigit() or int(selection) > len(available_drivers):
             print(colorize("Please select a number in the range of 0 to {0}"
                            .format(len(available_drivers)), colorama.Fore.RED))
             continue
-        driver = unicode(available_drivers[int(selection)-1])
+        driver = str(available_drivers[int(selection)-1])
         print(colorize("Selected \"{0}\" as device driver".format(driver),
                        colorama.Fore.GREEN))
         return driver
@@ -114,7 +112,7 @@ def _select_plugins(preselected=None):
         for pos, ext in enumerate(available_plugins, 1):
             print("  {0} {1}: {2}"
                   .format('x' if ext in selected_plugins else ' ', pos, ext))
-        selection = raw_input("Select a plugin (or hit enter to finish): ")
+        selection = input("Select a plugin (or hit enter to finish): ")
         if not selection:
             break
         if not selection.isdigit() or int(selection) > len(available_plugins):
@@ -139,13 +137,13 @@ def _setup_processing_pipeline(config):
     # Only get names of postprocessing plugins. For this we have to load all
     # enabled plugins first and check if they implement the correct hook.
     exts = [name for name, cls in plugin.get_plugins(*config["plugins"].get())
-            .iteritems() if issubclass(cls, plugin.ProcessHooksMixin)]
+            .items() if issubclass(cls, plugin.ProcessHooksMixin)]
     if not exts:
         return
     print("The following postprocessing plugins were detected:")
     print("\n".join(" - {0}".format(ext) for ext in exts))
     while True:
-        answer = raw_input("Please enter the extensions in the order that they"
+        answer = input("Please enter the extensions in the order that they"
                            " should be invoked, separated by commas or hit"
                            " enter to keep the current order:\n")
         if not answer:
@@ -222,7 +220,7 @@ def configure(config):
     # We only need to set the device target_page if the driver supports
     # shooting with two devices
     if driver and plugin.DeviceFeatures.IS_CAMERA in driver.features:
-        answer = raw_input(
+        answer = input(
             "Do you want to configure the target_page of your devices?\n"
             "(Required for shooting with two devices) [y/N]: ")
         answer = True if answer.lower() == 'y' else False
@@ -231,7 +229,7 @@ def configure(config):
             for target_page in ('odd', 'even'):
                 _set_device_target_page(config, target_page)
 
-        answer = raw_input("Do you want to setup the focus for your cameras? "
+        answer = input("Do you want to setup the focus for your cameras? "
                            "[y/N]: ")
         answer = True if answer.lower() == 'y' else False
         if answer:

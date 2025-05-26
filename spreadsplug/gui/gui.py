@@ -122,7 +122,7 @@ class IntroPage(QtGui.QWizardPage):
         ]
         available.append('device')
 
-        for name, tmpl in wizard.config.templates.iteritems():
+        for name, tmpl in wizard.config.templates.items():
             if not tmpl or name not in available:
                 continue
             page = QtGui.QGroupBox()

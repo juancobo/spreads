@@ -29,8 +29,6 @@ generated in on a separate ScanTailor instance for every split file, greatly
 increasing post-processing performance.
 """
 
-from __future__ import division, unicode_literals
-
 import copy
 import logging
 import math
@@ -140,7 +138,7 @@ class ScanTailorPlugin(HookPlugin, ProcessHooksMixin):
         else:
             generation_cmd.extend(in_paths)
 
-        generation_cmd.append(unicode(out_dir))
+        generation_cmd.append(str(out_dir))
         logger.debug(" ".join(generation_cmd))
         if IS_WIN:
             sp = util.get_subprocess(generation_cmd, stdin=subprocess.PIPE)
@@ -193,11 +191,11 @@ class ScanTailorPlugin(HookPlugin, ProcessHooksMixin):
         :rtype:                 list of :py:class:`pathlib.Path`
         """
         num_pieces = multiprocessing.cpu_count()
-        whole_tree = ET.parse(unicode(projectfile))
+        whole_tree = ET.parse(str(projectfile))
         num_files = len(whole_tree.findall('./files/file'))
         splitfiles = []
         files_per_job = int(math.ceil(float(num_files)/num_pieces))
-        for idx in xrange(num_pieces):
+        for idx in range(num_pieces):
             subtree = copy.deepcopy(whole_tree)
             root = subtree.getroot()
             start = idx*files_per_job
@@ -214,7 +212,7 @@ class ScanTailorPlugin(HookPlugin, ProcessHooksMixin):
                     elem_root.remove(node)
             out_file = temp_dir / "{0}-{1}.ScanTailor".format(projectfile.stem,
                                                               idx)
-            subtree.write(unicode(out_file))
+            subtree.write(str(out_file))
             splitfiles.append(out_file)
         return splitfiles
 
@@ -234,7 +232,7 @@ class ScanTailorPlugin(HookPlugin, ProcessHooksMixin):
         split_config = self._split_configuration(projectfile, temp_dir)
         logger.debug("Launching those subprocesses!")
         processes = [util.get_subprocess([CLI_BIN, '--start-filter=6',
-                                          unicode(cfgfile), unicode(out_dir)])
+                                          str(cfgfile), str(out_dir)])
                      for cfgfile in split_config]
 
         last_count = 0
@@ -248,7 +246,7 @@ class ScanTailorPlugin(HookPlugin, ProcessHooksMixin):
                 if p.poll() is not None:
                     processes.remove(p)
             time.sleep(.01)
-        shutil.rmtree(unicode(temp_dir))
+        shutil.rmtree(str(temp_dir))
 
     def process(self, pages, target_path):
         """ Run the most recent image of every page through ScanTailor.
@@ -277,7 +275,7 @@ class ScanTailorPlugin(HookPlugin, ProcessHooksMixin):
             fpath = page.get_latest_processed(image_only=True)
             if fpath is None:
                 fpath = page.raw_image
-            in_paths[unicode(fpath)] = page
+            in_paths[str(fpath)] = page
 
         logger.info("Generating ScanTailor configuration")
         self._generate_configuration(sorted(in_paths.keys()),
@@ -290,7 +288,7 @@ class ScanTailorPlugin(HookPlugin, ProcessHooksMixin):
                         "otherwise be ignored.")
             time.sleep(5)
             logger.info("Opening ScanTailor GUI for manual adjustment")
-            proc = util.get_subprocess([GUI_BIN, unicode(projectfile)])
+            proc = util.get_subprocess([GUI_BIN, str(projectfile)])
             proc.wait()
         # Check if the user already generated output files from the GUI
         if not sum(1 for x in out_dir.glob('*.tif')) == len(pages):
@@ -301,10 +299,10 @@ class ScanTailorPlugin(HookPlugin, ProcessHooksMixin):
         # Associate generated output files with our pages
         for fname in out_dir.glob('*.tif'):
             out_stem = fname.stem
-            for in_path, page in in_paths.iteritems():
+            for in_path, page in in_paths.items():
                 if Path(in_path).stem == out_stem:
                     target_fname = target_path/fname.name
-                    shutil.copyfile(unicode(fname), unicode(target_fname))
+                    shutil.copyfile(str(fname), str(target_fname))
                     page.processed_images[self.__name__] = target_fname
                     break
             else:
@@ -312,12 +310,12 @@ class ScanTailorPlugin(HookPlugin, ProcessHooksMixin):
                             .format(fname))
 
         # Remove temporary files/directories
-        shutil.rmtree(unicode(out_dir))
+        shutil.rmtree(str(out_dir))
         # FIXME: This fails on Windows since there seems to be some non-gcable
         #        reference to the file around, but I currently cannot figure
         #        out where, so we just ignore the error...
         try:
             projectfile.unlink()
-        except WindowsError as e:
+        except OSError as e:
             if e.errno == 32:
                 pass

@@ -19,12 +19,10 @@
 Graphical configuration dialog.
 """
 
-from __future__ import division, unicode_literals
-
 import logging
-import Tkinter as tk
-import tkMessageBox as messagebox
-import ttk
+import tkinter as tk
+import tkinter.messagebox as messagebox
+import tkinter.ttk as ttk
 
 import spreads.plugin as plugin
 
@@ -104,7 +102,7 @@ class TkConfigurationWindow(tk.Frame):
         self.selected_plugins = list(selection)
         try:
             exts = [name for name, cls in plugin.get_plugins(*selection)
-                    .iteritems() if issubclass(cls, plugin.ProcessHooksMixin)]
+                    .items() if issubclass(cls, plugin.ProcessHooksMixin)]
         except plugin.ExtensionException as e:
             exts = []
             failed_ext = e.extension

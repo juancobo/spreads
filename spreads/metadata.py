@@ -23,8 +23,6 @@ dictionary with the following keys (which corresponds to the Dublin Core
 field of the same name): `creator`, `identifier`, `date`, `language`.
 """
 
-from __future__ import division, unicode_literals
-
 from collections import MutableMapping
 
 import isbnlib
@@ -150,7 +148,7 @@ class Metadata(MutableMapping):
         :type path:         :py:class:`pathlib.Path`
         """
         self.filepath = base_path/self.FILENAME
-        self._backingstore = BagInfo(unicode(self.filepath))
+        self._backingstore = BagInfo(str(self.filepath))
 
     def __getitem__(self, key):
         val = self._backingstore[key]

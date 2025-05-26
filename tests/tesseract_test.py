@@ -48,7 +48,7 @@ def test_perform_ocr(plugin, tmpdir):
         else:
             shutil.copyfile('./tests/data/000.hocr', args[2]+'.html')
         return mock.Mock(side_effect=dummy_poll)
-    in_paths = [Path('{0:03}.tif'.format(idx)) for idx in xrange(10)]
+    in_paths = [Path('{0:03}.tif'.format(idx)) for idx in range(10)]
     with mock.patch('spreads.util.get_subprocess') as get_sp:
         get_sp.side_effect = dummy_popen
         plugin._perform_ocr(in_paths, tmpdir, 'eng')
@@ -57,8 +57,8 @@ def test_perform_ocr(plugin, tmpdir):
 
 
 def test_perform_replacements(plugin, tmpdir):
-    shutil.copyfile('./tests/data/000.hocr', unicode(tmpdir.join('test.html')))
-    fpath = Path(unicode(tmpdir.join('test.html')))
+    shutil.copyfile('./tests/data/000.hocr', str(tmpdir.join('test.html')))
+    fpath = Path(str(tmpdir.join('test.html')))
     plugin._perform_replacements(fpath)
     with fpath.open('r') as fp:
         matches = re.findall(
@@ -69,14 +69,14 @@ def test_perform_replacements(plugin, tmpdir):
 
 def test_output(plugin, tmpdir):
     dummy_pages = []
-    for idx in xrange(20):
+    for idx in range(20):
         dummy_pages.append(
             Page(Path('000.jpg'), idx,
                  processed_images={'tesseract': Path('./tests/data/000.hocr')})
         )
-    plugin.output(dummy_pages, Path(unicode(tmpdir)), None, None)
+    plugin.output(dummy_pages, Path(str(tmpdir)), None, None)
     assert tmpdir.join('text.html').exists()
-    tree = ET.parse(unicode(tmpdir.join('text.html')))
+    tree = ET.parse(str(tmpdir.join('text.html')))
     assert len(tree.findall('.//span[@class="ocrx_word"]')) == 20*201
     assert len(tree.findall('.//span[@class="ocr_line"]')) == 20*26
     assert len(tree.findall('.//p[@class="ocr_par"]')) == 20*4
