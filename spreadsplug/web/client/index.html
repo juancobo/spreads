@@ -1,23 +1,30 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>spreads</title>
+  <meta name="description" content="Spreads - Book Digitization Software" />
+  <title>Spreads - Book Digitization</title>
   <link rel="shortcut icon" href="/static/img/favicon.ico">
   <script type="text/javascript">
-    window.spreadsVersion = {{version|tojson|safe}};
-    window.config = {{default_config|tojson|safe}};
-    window.configTemplates = {{config_templates|tojson|safe}};
-    window.plugins = {{plugins|tojson|safe}};
-    window.metadataSchema = {{metaschema|tojson|safe}}
+    // Global configuration for the React app
+    window.SPREADS_CONFIG = {
+      version: {{version|tojson|safe}},
+      defaultConfig: {{default_config|tojson|safe}},
+      configTemplates: {{config_templates|tojson|safe}},
+      plugins: {{plugins|tojson|safe}},
+      metadataSchema: {{metaschema|tojson|safe}},
+      debug: {{debug|tojson|safe}}
+    };
   </script>
 </head>
 <body>
-{% if debug %}
-  <script src="/static/bundle-dev.js"></script>
-{% else %}
-  <script src="/static/bundle.js"></script>
-{% endif %}
+  <div id="spreads-app"></div>
+  <noscript>
+    <div class="alert alert-warning">
+      <h4>JavaScript Required</h4>
+      <p>This application requires JavaScript to be enabled. Please enable JavaScript in your browser and reload the page.</p>
+    </div>
+  </noscript>
 </body>
 </html>

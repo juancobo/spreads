@@ -1,5 +1,3 @@
-/* global require */
-
 /*
  * Copyright (C) 2014 Johannes Baiter <johannes.baiter@gmail.com>
  * This program is free software: you can redistribute it and/or modify
@@ -16,52 +14,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function() {
-  'use strict';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import SpreadsApp from './components/SpreadsApp.jsx';
 
+// Load stylesheets
+import '../scss/app.scss';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
-  var Backbone = require('backbone'),
-      jQuery = require('jquery'),
-      Router = require('./router'),
-      React = require('react/addons');
+// Initialize the React application
+const container = document.getElementById('spreads-app');
+const root = createRoot(container);
 
-  // Load stylesheets
-  require('../scss/app.scss');
-  require("imports?this=>window,Modernizr=../../../../src/util.js,jQuery=jquery!../node_modules/zurb-foundation/js/foundation/foundation.js");
-  require("imports?this=>window,Modernizr=../../../../src/util.js,jQuery=jquery!../node_modules/zurb-foundation/js/foundation/foundation.topbar.js");
+root.render(
+  <BrowserRouter>
+    <SpreadsApp />
+  </BrowserRouter>
+);
 
-  // Assign jQuery to Backbone
-  Backbone.$ = jQuery;
+// Handle browser navigation
+window.addEventListener('popstate', () => {
+  // Modern browser history handling is handled by React Router
+});
 
-  // For debugging with the React chrome addon
-  window.React = React;
-
-  // Initialize routing
-  /** @global */
-  window.router = new Router();
-  Backbone.history.start({pushState: true, root: '/'});
-
-  // Initialize foundation
-  jQuery(document).foundation();
-
-  // Initialize touch events in React
-  React.initializeTouchEvents();
-
-  // Intercept the browser's default link handling
-  jQuery(document).on('click', 'a:not([data-bypass])', function(e) {
-    var href = jQuery(this).attr('href');
-    if (!href) {
-      return;
-    }
-    var protocol = this.protocol + '//';
-    if (href.slice(protocol.length) !== protocol) {
-      e.preventDefault();
-      window.router.navigate(href, true);
-    }
-  });
-
-  // Intercept the browser's default form submissino handling
-  jQuery(document).on('submit', 'form', function(e) {
+// Intercept default form submission
+document.addEventListener('submit', (e) => {
+  if (e.target.tagName === 'FORM' && !e.target.dataset.allowDefault) {
     e.preventDefault();
-  });
-}());
+  }
+});

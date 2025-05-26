@@ -1,8 +1,127 @@
-@import "settings";
-@import "../node_modules/zurb-foundation/scss/foundation";
+// Modern Bootstrap-based styles for Spreads
+@use "sass:color";
+@use "sass:math";
 
-$fa-font-path: "../node_modules/font-awesome/fonts";
-@import "../node_modules/font-awesome/scss/font-awesome";
+// Custom variables for Spreads
+$primary: #2c3e50;
+$secondary: #95a5a6;
+$success: #27ae60;
+$info: #3498db;
+$warning: #f39c12;
+$danger: #e74c3c;
+
+// Bootstrap breakpoints (matching Bootstrap 5 defaults)
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px
+);
+
+// Media query mixins for Foundation compatibility
+$small-only: "(max-width: 767px)";
+$medium-up: "(min-width: 768px)";
+$medium-only: "(min-width: 768px) and (max-width: 991px)";
+$large-up: "(min-width: 992px)";
+
+// Foundation color compatibility
+$alert-color: $danger;
+$warning-color: $warning;
+$info-color: $info;
+
+// Font Awesome path
+$fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts" !default;
+
+// Custom rem-calc function replacement
+@function rem-calc($value) {
+  @return math.div($value, 16) * 1rem;
+}
+
+// Import Bootstrap and Font Awesome via CSS to avoid SCSS import issues
+// The main.js file will import these CSS files directly
+
+// Custom Spreads styles
+.spreads-app {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.workflow-card {
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.capture-preview {
+  background-color: #f8f9fa;
+  border: 2px dashed #dee2e6;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &.active {
+    border-color: $primary;
+    background-color: color.adjust($primary, $alpha: -0.95);
+  }
+}
+
+.processing-step {
+  .step-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &.completed {
+      background-color: $success;
+      color: white;
+    }
+    
+    &.active {
+      background-color: $primary;
+      color: white;
+    }
+    
+    &.pending {
+      background-color: #e9ecef;
+      color: #6c757d;
+    }
+  }
+}
+
+.metadata-editor {
+  .custom-field {
+    position: relative;
+    
+    .remove-field-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: $danger;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 12px;
+      
+      &:hover {
+        background: color.adjust($danger, $lightness: -10%);
+      }
+    }
+  }
+}
 
 @mixin animation ($animation, $duration, $iteration-count, $timing-function, $delay) {
   -webkit-animation: $animation $duration $iteration-count $timing-function $delay;
@@ -46,32 +165,83 @@ $fa-font-path: "../node_modules/font-awesome/fonts";
 }
 
 .action-button {
-  @include button(rem-calc(12));
+  // Custom button styling that works with Bootstrap classes
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  user-select: none;
+  border: 1px solid transparent;
+  padding: rem-calc(12) rem-calc(16);
   font-size: rem-calc(32);
   line-height: rem-calc(32);
+  border-radius: 0.25rem;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  background-color: $primary;
+  border-color: $primary;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: color.adjust($primary, $lightness: -10%);
+    border-color: color.adjust($primary, $lightness: -10%);
+    color: #fff;
+    text-decoration: none;
+  }
 
   &.small {
-    @include button(rem-calc(10));
+    padding: rem-calc(10) rem-calc(12);
     font-size: rem-calc(24);
     line-height: rem-calc(24);
+    border-radius: 0.2rem;
   }
 
   &.tiny {
-    @include button(rem-calc(8));
+    padding: rem-calc(8) rem-calc(10);
     font-size: rem-calc(14);
     line-height: rem-calc(14);
+    border-radius: 0.2rem;
   }
 
-  &.disabled {
-    @include button-style($disabled:true);
+  &.disabled,
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    pointer-events: none;
   }
 
-  &.secondary { @include button-style($bg:$secondary-color); }
+  &.secondary { 
+    background-color: $secondary;
+    border-color: $secondary;
+    
+    &:hover {
+      background-color: color.adjust($secondary, $lightness: -10%);
+      border-color: color.adjust($secondary, $lightness: -10%);
+    }
+  }
 
-  &.complete { @include button-style($bg:$success-color); }
+  &.complete { 
+    background-color: $success;
+    border-color: $success;
+    
+    &:hover {
+      background-color: color.adjust($success, $lightness: -10%);
+      border-color: color.adjust($success, $lightness: -10%);
+    }
+  }
 
   &.dropdown {
-    @include dropdown-button();
+    &::after {
+      display: inline-block;
+      margin-left: 0.255em;
+      vertical-align: 0.255em;
+      content: "";
+      border-top: 0.3em solid;
+      border-right: 0.3em solid transparent;
+      border-bottom: 0;
+      border-left: 0.3em solid transparent;
+    }
     margin-bottom: 0;
   }
 
@@ -355,10 +525,10 @@ li.page-preview {
         left: 0;
 
         &:first-child {
-          @include animation(bounce, 2.0s, infinite, ease-in-out, 0s);
+          animation: bounce 2.0s infinite ease-in-out 0s;
         }
         &:last-child {
-          @include animation(bounce, 2.0s, infinite, ease-in-out, -1.0s);
+          animation: bounce 2.0s infinite ease-in-out -1.0s;
         }
       }
     }
@@ -642,24 +812,16 @@ fieldset.config {
 }
 
 /* ======= Animations ======== */
-@include keyframes(bounce) {
+@keyframes bounce {
   0%, 100% {
-    @include transform(scale(0.0));
+    transform: scale(0.0);
   }
   50% {
-    @include transform(scale(1.0));
+    transform: scale(1.0);
   }
 }
 
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 300;
-  src: url('../node_modules/connect-fonts-opensans/fonts/default/opensans-light.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 400;
-  src: url('../node_modules/connect-fonts-opensans/fonts/default/opensans-regular.ttf') format('truetype');
+// Use system font stack - Bootstrap 5 default
+body {
+  font-family: var(--bs-body-font-family, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
 }
