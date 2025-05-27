@@ -87,20 +87,37 @@ class MockChdkptp:
         )]
 
 try:
-    # First try to use the local version from vendor
-    from spreads.vendor.chdkptp import chdkptp
+    # Use our patched chdkptp package first (preferred for real cameras)
+    import sys
+    import os
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+    from chdkptp_patched import ChdkDevice, list_devices
+    import chdkptp_patched.util as chdkptp_util
+    # Create a chdkptp module-like object for compatibility
+    class chdkptp:
+        ChdkDevice = ChdkDevice
+        list_devices = staticmethod(list_devices)
+        class util:
+            shutter_to_tv96 = staticmethod(chdkptp_util.shutter_to_tv96)
     chdkptp_available = True
+    print("Using patched chdkptp.py for real camera support")
 except Exception as e:
-    # Catch any exception during chdkptp import, including Lua errors
     try:
-        # Fall back to the system-installed version
+        # Fall back to system-installed chdkptp if patched version fails
         import chdkptp
         chdkptp_available = True
+        print("Using system-installed chdkptp.py")
     except Exception:
-        # Final fallback to mock
-        print("Warning: chdkptp not available, using mock implementation")
-        chdkptp = MockChdkptp()
-        chdkptp_available = False
+        try:
+            # Fall back to the local version from vendor if system version fails
+            from spreads.vendor.chdkptp import chdkptp
+            chdkptp_available = True
+            print("Using vendor chdkptp.py")
+        except Exception:
+            # Final fallback to mock
+            print("Warning: chdkptp not available, using mock implementation")
+            chdkptp = MockChdkptp()
+            chdkptp_available = False
 
 from spreads.config import OptionTemplate
 from spreads.plugin import DeviceDriver, DeviceFeatures, DeviceException

@@ -19,11 +19,13 @@
 
 This version includes significant improvements and fixes:
 
-✅ **CHDK Camera Driver**: Fixed and stabilized with robust fallback system  
+✅ **CHDK Camera Driver**: Fixed critical Lua runtime issues and stabilized with robust fallback system  
+✅ **Real Hardware Support**: Verified compatibility with Canon PowerShot A2500 and similar CHDK cameras  
 ✅ **Python 3.11+ Compatibility**: Full support for modern Python environments  
 ✅ **ARM64 Support**: Optimized for Raspberry Pi and ARM-based systems  
 ✅ **Improved Error Handling**: Better diagnostics and graceful degradation  
-✅ **Enhanced Mock System**: Comprehensive testing without hardware dependencies  
+✅ **Enhanced Device Detection**: Direct USB enumeration for reliable camera discovery  
+✅ **Dual Camera Setup**: Fixed odd/even page assignment for book scanning workflows
 
 ## Quick Installation
 

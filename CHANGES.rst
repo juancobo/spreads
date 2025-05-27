@@ -1,3 +1,37 @@
+1.0.1 (2025/05/26)
+    CHDK Camera Support Fixes & Hardware Compatibility Improvements
+    
+    CHDK Driver Enhancements:
+    - Fixed critical Lua runtime initialization issues in chdkptp library
+    - Implemented robust fallback system for problematic vendor chdkptp packages
+    - Created patched chdkptp module that bypasses Lua CHDKPTP_PATH errors
+    - Added direct USB device detection using lsusb for Canon cameras
+    - Improved camera detection for real Canon PowerShot A2500 and similar models
+    - Enhanced error handling with graceful degradation to mock implementations
+    - Fixed import path issues and module structure problems
+    - Added comprehensive device information reporting (bus/device, USB IDs, serials)
+    
+    Hardware Support:
+    - Verified compatibility with Canon PowerShot A2500 cameras
+    - Fixed dual-camera setup detection and configuration
+    - Improved camera assignment for odd/even page scanning
+    - Enhanced USB device enumeration and identification
+    - Added support for multiple identical camera models
+    
+    System Compatibility:
+    - Fixed Python 3.11+ compatibility issues with chdkptp
+    - Resolved ARM64/aarch64 library loading problems
+    - Improved Raspberry Pi camera detection and control
+    - Enhanced system-installed vs. vendor package handling
+    - Added better diagnostics for camera connection issues
+    
+    Developer Experience:
+    - Added comprehensive debug utilities for camera testing
+    - Improved error messages and troubleshooting information
+    - Enhanced mock system for testing without hardware
+    - Better logging for camera detection and initialization
+    - Added fallback mechanisms for development environments
+
 1.0.0 (2025/05/25)
     Complete Python 3 Migration & Frontend Modernization
     
