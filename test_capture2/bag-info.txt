@@ -1,0 +1,5 @@
+Bagging-Date: 2025-05-26
+Bag-Software-Agent: bagit.py <http://github.com/libraryofcongress/bagit-python>
+Payload-Oxum: 0.0
+Spreads-Slug: test-capture2
+Spreads-Id: 56cdc5b9-91c7-4935-a3c4-45ad63ae14d8

@@ -116,6 +116,7 @@ setup(
         "spreads.vendor",
         "spreads.vendor.huey",
         "spreads.vendor.huey.backends",
+        "spreads.vendor.chdkptp",  # Add the local chdkptp.py package
         "spreadsplug",
         "spreadsplug.dev",
         "spreadsplug.gui",
@@ -155,7 +156,7 @@ setup(
         "isbnlib >= 3.10.14",
     ],
     extras_require={
-        "chdkcamera": ["jpegtran-cffi >= 0.5.2", "chdkptp.py >= 0.1.3"],
+        "chdkcamera": ["jpegtran-cffi >= 0.5.2"],  # Removed chdkptp.py dependency since we're using local version
         "gphoto2camera": ["gphoto2-cffi >= 0.4.3"],
         "autorotate": ["jpegtran-cffi >= 0.5.2"],
         "gui": ["PySide6 >= 6.8.0"],

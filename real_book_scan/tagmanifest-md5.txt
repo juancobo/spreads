@@ -1,0 +1,3 @@
+578e61bb2c62328a35109aa657c6d110  bag-info.txt
+d2d2d7bf6e003c6b41b9534aed71a7b8  config.yml
+a008da26a17cadabaf60d599699c2746  pagemeta.json

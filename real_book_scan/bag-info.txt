@@ -1,0 +1,5 @@
+Bagging-Date: 2025-05-26
+Bag-Software-Agent: bagit.py <http://github.com/libraryofcongress/bagit-python>
+Payload-Oxum: 217.1
+Spreads-Slug: real-book-scan
+Spreads-Id: dad8b80a-9ae1-4e20-9677-08c9bc90e79d
