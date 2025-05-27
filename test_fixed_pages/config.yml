@@ -1,0 +1,18 @@
+plugins: []
+device:
+    monochrome: no
+    shoot_raw: no
+    upside_down: no
+    flip_target_pages: no
+    parallel_capture: yes
+    focus_mode: autofocus_all
+    focus_distance: 300
+    test: 1337
+    super: foo
+    depends: 0
+    single: no
+    sensitivity: 80
+    shutter_speed: 1/25
+    zoom_level: 3
+    dpi: 300
+    whitebalance: Auto

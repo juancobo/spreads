@@ -5,87 +5,6 @@ import tempfile
 import time
 from fractions import Fraction
 
-# Create a fallback mock for chdkptp when the vendor version fails
-class MockChdkptp:
-    class util:
-        @staticmethod
-        def shutter_to_tv96(shutter_speed):
-            # Mock conversion from shutter speed to TV96 format
-            # TV96 = -log2(shutter_speed) * 96
-            import math
-            if shutter_speed <= 0:
-                return 0
-            return int(-math.log2(shutter_speed) * 96)
-    
-    class DeviceInfo:
-        def __init__(self, model_name, bus_num, device_num, vendor_id, product_id, serial_num, chdk_api):
-            self.model_name = model_name
-            self.bus_num = bus_num
-            self.device_num = device_num
-            self.vendor_id = vendor_id
-            self.product_id = product_id
-            self.serial_num = serial_num
-            self.chdk_api = chdk_api
-    
-    class ChdkDevice:
-        def __init__(self, device_info):
-            self.info = device_info
-            self.is_connected = True
-            self.mode = 'record'
-        
-        def lua_execute(self, script, do_return=True):
-            # Mock responses for common CHDK scripts
-            if "get_buildinfo" in script:
-                return {'build_revision': 3000}
-            elif "get_zoom_steps" in script:
-                return 8
-            elif "get_focus" in script:
-                return 300
-            return None if not do_return else True
-        
-        def switch_mode(self, mode):
-            self.mode = mode
-        
-        def upload_file(self, local_path, remote_path):
-            pass
-        
-        def download_file(self, remote_path):
-            if remote_path == 'OWN.TXT':
-                return "ODD\n"
-            return b"mock_file_data"
-        
-        def shoot(self, **kwargs):
-            # Create a minimal but valid JPEG with proper EXIF structure
-            # This is a 1x1 pixel JPEG with valid EXIF data that jpegtran can process
-            mock_jpeg_with_valid_exif = (
-                b'\xff\xd8\xff\xe1\x00\x58Exif\x00\x00II*\x00\x08\x00\x00\x00'
-                b'\x05\x00\x0e\x01\x02\x00\x0c\x00\x00\x00\x26\x00\x00\x00'
-                b'\x0f\x01\x02\x00\x04\x00\x00\x00Mock\x10\x01\x02\x00\x04\x00\x00\x00'
-                b'1.0\x00\x12\x01\x03\x00\x01\x00\x00\x00\x01\x00\x00\x00'
-                b'\x1a\x01\x05\x00\x01\x00\x00\x00\x4e\x00\x00\x00'
-                b'MockCamera\x00\x00'
-                b'\xff\xdb\x00C\x00\x08\x06\x06\x07\x06\x05\x08\x07\x07\x07\t\t\x08\n\x0c\x14\r\x0c\x0b\x0b\x0c\x19\x12\x13\x0f'
-                b'\x14\x1d\x1a\x1f\x1e\x1d\x1a\x1c\x1c $.\' ",#\x1c\x1c(7),01444\x1f\'9=82<.342'
-                b'\xff\xc0\x00\x11\x08\x00\x01\x00\x01\x01\x01\x11\x00\x02\x11\x01\x03\x11\x01'
-                b'\xff\xc4\x00\x14\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08'
-                b'\xff\xda\x00\x08\x01\x01\x00\x00?\x00\xaa'
-                b'\xff\xd9'
-            )
-            return mock_jpeg_with_valid_exif
-        
-        def get_frames(self):
-            while True:
-                yield b"mock_preview_data"
-        
-        def reconnect(self):
-            pass
-    
-    @staticmethod
-    def list_devices():
-        return [MockChdkptp.DeviceInfo(
-            'MockCamera', 0, 0, 0x4a9, 0x31ef, 'mock123', (2, 0)
-        )]
-
 try:
     # Use our patched chdkptp package first (preferred for real cameras)
     import sys
@@ -114,10 +33,7 @@ except Exception as e:
             chdkptp_available = True
             print("Using vendor chdkptp.py")
         except Exception:
-            # Final fallback to mock
-            print("Warning: chdkptp not available, using mock implementation")
-            chdkptp = MockChdkptp()
-            chdkptp_available = False
+            raise RuntimeError("No valid chdkptp implementation found")
 
 from spreads.config import OptionTemplate
 from spreads.plugin import DeviceDriver, DeviceFeatures, DeviceException

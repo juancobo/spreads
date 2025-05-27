@@ -1,0 +1,4 @@
+5e5cbb44edb7adb094c31fadf3151fa9  data/raw/001.jpg
+5e5cbb44edb7adb094c31fadf3151fa9  data/raw/003.jpg
+5e5cbb44edb7adb094c31fadf3151fa9  data/raw/005.jpg
+5e5cbb44edb7adb094c31fadf3151fa9  data/raw/007.jpg

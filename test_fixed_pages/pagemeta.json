@@ -1,0 +1,58 @@
+[
+  {
+    "sequence_num": 0,
+    "capture_num": 1,
+    "page_label": "1",
+    "raw_image": "data/raw/001.jpg",
+    "processed_images": {}
+  },
+  {
+    "sequence_num": 1,
+    "capture_num": 1,
+    "page_label": "1",
+    "raw_image": "data/raw/001.jpg",
+    "processed_images": {}
+  },
+  {
+    "sequence_num": 2,
+    "capture_num": 3,
+    "page_label": "3",
+    "raw_image": "data/raw/003.jpg",
+    "processed_images": {}
+  },
+  {
+    "sequence_num": 3,
+    "capture_num": 3,
+    "page_label": "3",
+    "raw_image": "data/raw/003.jpg",
+    "processed_images": {}
+  },
+  {
+    "sequence_num": 4,
+    "capture_num": 5,
+    "page_label": "5",
+    "raw_image": "data/raw/005.jpg",
+    "processed_images": {}
+  },
+  {
+    "sequence_num": 5,
+    "capture_num": 5,
+    "page_label": "5",
+    "raw_image": "data/raw/005.jpg",
+    "processed_images": {}
+  },
+  {
+    "sequence_num": 6,
+    "capture_num": 7,
+    "page_label": "7",
+    "raw_image": "data/raw/007.jpg",
+    "processed_images": {}
+  },
+  {
+    "sequence_num": 7,
+    "capture_num": 7,
+    "page_label": "7",
+    "raw_image": "data/raw/007.jpg",
+    "processed_images": {}
+  }
+]

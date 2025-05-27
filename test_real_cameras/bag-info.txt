@@ -1,0 +1,5 @@
+Bagging-Date: 2025-05-26
+Bag-Software-Agent: bagit.py <http://github.com/libraryofcongress/bagit-python>
+Payload-Oxum: 0.0
+Spreads-Slug: test-real-cameras
+Spreads-Id: 505253fa-e086-4883-b913-351d9e7e579c
